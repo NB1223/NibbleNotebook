@@ -17,14 +17,24 @@ CREATE TABLE Tags (
     tag_name VARCHAR(255) NOT NULL PRIMARY KEY
 );
 
+-- User Table
+CREATE TABLE User (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(255) UNIQUE NOT NULL, 
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
+
 -- Recipe Table
 CREATE TABLE Recipe (
     recipe_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
     description TEXT,
     cuisine VARCHAR(100),
     time DOUBLE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
 -- Recipe_Ingredients Junction Table (many-to-many relationship)
@@ -51,14 +61,6 @@ CREATE TABLE Recipe_Steps (
     step_number INT NOT NULL,
     instruction TEXT NOT NULL,
     FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id)
-);
-
--- User Table
-CREATE TABLE User (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_name VARCHAR(255) UNIQUE NOT NULL, 
-    password VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL
 );
 
 -- User_Saved_Recipes Junction Table
