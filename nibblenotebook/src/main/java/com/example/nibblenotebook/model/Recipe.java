@@ -80,12 +80,12 @@ public class Recipe {
     // Helper methods
     public void addIngredient(Ingredient ingredient) {
         ingredients.add(ingredient);
-        ingredient.getRecipes().add(this);
+        // ingredient.getRecipes().add(this);
     }
     
     public void removeIngredient(Ingredient ingredient) {
         ingredients.remove(ingredient);
-        ingredient.getRecipes().remove(this);
+        // ingredient.getRecipes().remove(this);
     }
     
     public void addTag(Tag tag) {
