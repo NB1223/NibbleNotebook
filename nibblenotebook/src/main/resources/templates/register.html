@@ -1,26 +1,50 @@
-
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Register</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Register - Nibble Notebook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .register-form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <h2>Register</h2>
-    <form action="/register" method="post">
-        <label for="name">Full Name:</label>
-        <input type="text" id="name" name="name" required />
+    <h1>Register for Nibble Notebook</h1>
     
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required />
-    
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required />
-    
-        <button type="submit">Register</button>
-    </form>
-    <p th:text="${error}"></p>
-    <a href="/login">Already have an account?</a>
+    <div class="register-form">
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" th:field="*{username}" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" th:field="*{password}" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" th:field="*{name}" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+        
+        <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
 </body>
 </html>
