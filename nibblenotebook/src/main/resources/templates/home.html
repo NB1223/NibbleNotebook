@@ -22,18 +22,44 @@
             cursor: pointer;
             text-decoration: none;
         }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 200px;
+            margin-top: 20px;
+        }
+        .button-link {
+            display: block;
+            padding: 10px;
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .button-link:hover {
+            background-color: #1976D2;
+        }
     </style>
 </head>
 <body>
     <div class="user-info">
         <h2>Welcome, <span th:text="${name}">User</span>!</h2>
         <p>User ID: <span th:text="${userId}">ID</span></p>
-        <a href="/logout" class="logout-btn">Logout</a>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
     </div>
     
     <h1>Nibble Notebook</h1>
     <p>You are successfully logged in and can now access all features.</p>
-    
-    <!-- Add your notebook content here -->
+
+    <div class="button-group">
+        <a th:href="@{/search}" class="button-link">Search Recipes</a>
+        <a th:href="@{/my-recipes}" class="button-link">My Recipes</a>
+        <a th:href="@{/my-meals}" class="button-link">My Meals</a>
+        <a th:href="@{/my-pantry}" class="button-link">My Pantry</a>
+        <a th:href="@{/add-recipe}" class="button-link">+ Add Recipe</a>
+    </div>
 </body>
 </html>
