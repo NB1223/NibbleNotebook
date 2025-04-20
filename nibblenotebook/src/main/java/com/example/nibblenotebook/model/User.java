@@ -1,6 +1,7 @@
 package com.example.nibblenotebook.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "User") // match exact case
@@ -19,6 +20,9 @@ public class User {
 
     @Column(nullable = false)
     private String name; // Full name
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Recipe> recipes;
 
     // Constructors
     public User() {}
@@ -60,5 +64,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+    
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
     }
 }
