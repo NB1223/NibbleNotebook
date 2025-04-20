@@ -1,6 +1,5 @@
 package com.example.nibblenotebook.repository;
 
-import com.example.nibblenotebook.model.Ingredient;
 import com.example.nibblenotebook.model.Recipe;
 import com.example.nibblenotebook.model.RecipeIngredient;
 import org.springframework.data.jpa.repository.JpaRepository;

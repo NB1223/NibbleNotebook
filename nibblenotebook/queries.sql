@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS Recipe_Ingredients (
 
 -- Recipe_Steps Table (one-to-many relationship)
 CREATE TABLE IF NOT EXISTS Recipe_Steps (
+    recipe_step_id INT AUTO_INCREMENT PRIMARY KEY,
     recipe_id INT,
     step_number INT NOT NULL,
     instruction TEXT NOT NULL,

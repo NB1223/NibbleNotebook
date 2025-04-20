@@ -8,6 +8,7 @@ public class RecipeStep {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "recipe_step_id")
     private int id;
 
     @ManyToOne
