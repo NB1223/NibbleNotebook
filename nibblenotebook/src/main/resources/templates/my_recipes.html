@@ -4,40 +4,112 @@
     <title>My Recipes</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px;
         }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        h1 span {
+            color: rgb(43, 177, 235);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
         }
+
         li {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
+            background-color: #fff;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-        a {
-            margin-right: 10px;
+
+        .recipe-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .actions {
+            margin-top: 10px;
+        }
+
+        .actions a {
+            display: inline-block;
+            margin-right: 12px;
             text-decoration: none;
-            color: #0066cc;
+            color: #ffffff;
+            background-color: rgb(43, 177, 235);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
         }
-        a:hover {
+
+        .actions a:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .nav-links a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
+
+<div class="container">
     <h1>Welcome, <span th:text="${name}">User</span>!</h1>
     <h2>My Recipes</h2>
+
     <ul>
         <li th:each="recipe : ${recipes}">
-            <strong th:text="${recipe.name}"></strong> -
-            <span th:text="${recipe.description}"></span>
-            <a th:href="@{'/recipes/' + ${recipe.id} + '/ingredients'}">Manage Ingredients</a>
-            <a th:href="@{'/recipes/' + ${recipe.id} + '/steps'}">Manage Steps</a>
+            <div class="recipe-name" th:text="${recipe.name}">Recipe Name</div>
+            <div class="description" th:text="${recipe.description}">Recipe description goes here.</div>
+            <div class="actions">
+                <a th:href="@{'/recipes/' + ${recipe.id} + '/ingredients'}">Manage Ingredients</a>
+                <a th:href="@{'/recipes/' + ${recipe.id} + '/steps'}">Manage Steps</a>
+            </div>
         </li>
     </ul>
-    <a href="/recipes/add-recipe">Add New Recipe</a>
+
+    <div class="nav-links">
+        <a href="/recipes/add-recipe">+ Add New Recipe</a>
+        <a href="/home">← Home</a>
+    </div>
+</div>
+
 </body>
 </html>
