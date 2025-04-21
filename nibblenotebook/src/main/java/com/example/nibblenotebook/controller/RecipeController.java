@@ -53,12 +53,12 @@ public class RecipeController {
         return "my_recipes";
     }
 
-    @GetMapping("/add-recipe") // <-- matches /recipes/add-recipe
+    @GetMapping("/add-recipe")
     public String showAddRecipeForm(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        model.addAttribute("recipe", new Recipe());
+        model.addAttribute("recipe", Recipe.builder().build());
         model.addAttribute("name", session.getAttribute("name"));
 
         return "add_recipe";
@@ -72,8 +72,15 @@ public class RecipeController {
         User user = userRepo.findById(userId).orElse(null);
         if (user == null) return "redirect:/login";
 
-        recipe.setUser(user);
-        recipeRepo.save(recipe);
+        Recipe newRecipe = Recipe.builder()
+                .user(user)
+                .name(recipe.getName())
+                .description(recipe.getDescription())
+                .cuisine(recipe.getCuisine())
+                .time(recipe.getTime())
+                .build();
+
+        recipeRepo.save(newRecipe);
 
         return "redirect:/recipes/my-recipes";
     }

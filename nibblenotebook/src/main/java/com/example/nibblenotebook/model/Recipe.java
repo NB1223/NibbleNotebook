@@ -28,8 +28,13 @@ public class Recipe {
     private List<RecipeIngredient> ingredients;
 
     public Recipe() {}
-    // Getters & Setters
 
+    // Static method to get a builder instance
+    public static RecipeBuilder builder() {
+        return new RecipeBuilder();
+    }
+
+    // Getters & Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -53,5 +58,4 @@ public class Recipe {
 
     public List<RecipeIngredient> getIngredients() { return ingredients; }
     public void setIngredients(List<RecipeIngredient> ingredients) { this.ingredients = ingredients; }
-
 }
