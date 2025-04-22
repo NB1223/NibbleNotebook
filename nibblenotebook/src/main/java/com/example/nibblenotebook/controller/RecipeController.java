@@ -228,4 +228,49 @@ public class RecipeController {
 
         return "redirect:/recipes/" + recipeId + "/steps";
     }
+
+    @GetMapping("/home")
+    public String home(HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        // Get all recipes to display
+        List<Recipe> recipes = recipeRepo.findAll();
+        
+        // Add debug logging
+        System.out.println("Number of recipes found: " + recipes.size());
+        recipes.forEach(recipe -> System.out.println("Recipe: " + recipe.getName()));
+        
+        model.addAttribute("recipes", recipes);
+        model.addAttribute("name", session.getAttribute("name"));
+        model.addAttribute("userId", userId);
+
+        return "home";
+    }
+
+    @GetMapping("/{recipeId}/view")
+    public String viewRecipeDetails(@PathVariable("recipeId") int recipeId,
+                                    HttpSession session,
+                                    Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
+        if (recipe == null || recipe.getUser().getId() != userId) {
+            return "redirect:/recipes/my-recipes";
+        }
+
+        List<RecipeIngredient> ingredients = recipeIngredientRepo.findByRecipe(recipe);
+        List<RecipeStep> steps = recipeStepRepo.findByRecipeId(recipeId);
+        steps.sort(Comparator.comparingInt(RecipeStep::getStepNumber));
+
+        model.addAttribute("recipe", recipe);
+        model.addAttribute("ingredients", ingredients);
+        model.addAttribute("steps", steps);
+        model.addAttribute("name", session.getAttribute("name"));
+
+        return "recipe_view";
+    }
+
+
 }

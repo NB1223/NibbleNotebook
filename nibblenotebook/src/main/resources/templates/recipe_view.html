@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${recipe.name} + ' - Recipe Details'">Recipe Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+            background-color: #f9fafb;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .ingredients ul, .steps ol {
+            margin-left: 20px;
+        }
+        .ingredients li, .steps li {
+            padding: 5px 0;
+            font-size: 16px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 th:text="${recipe.name}">Recipe Name</h1>
+    <p><strong>Cuisine:</strong> <span th:text="${recipe.cuisine}">Cuisine</span></p>
+    <p><strong>Time:</strong> <span th:text="${recipe.time} + ' mins'">Time</span></p>
+    <p><strong>Description:</strong></p>
+    <p th:text="${recipe.description}">Recipe description here...</p>
+
+    <div class="section ingredients">
+        <h2>Ingredients</h2>
+        <ul>
+            <li th:each="ri : ${ingredients}"
+                th:text="${ri.ingredient.name} + ' - ' + ri.quantity + ' ' + ri.ingredient.unit">
+                Ingredient - Quantity Unit
+            </li>
+        </ul>
+    </div>
+
+    <div class="section steps">
+        <h2>Steps</h2>
+        <ol>
+            <li th:each="step : ${steps}" th:text="${step.instruction}">
+                Step instruction here...
+            </li>
+        </ol>
+    </div>
+
+    <a th:href="@{/recipes/my-recipes}">← Back to My Recipes</a>
+
+</body>
+</html>

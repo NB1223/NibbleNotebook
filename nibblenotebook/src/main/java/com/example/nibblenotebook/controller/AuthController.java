@@ -53,26 +53,8 @@ public class AuthController {
         session.setAttribute("username", dbUser.getUsername());
         session.setAttribute("name", dbUser.getName());
 
-        return "redirect:/home";
-    }
-
-    @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
-        Integer userId = (Integer) session.getAttribute("userId");
-        String name = (String) session.getAttribute("name");
-    
-        System.out.println("Home - Session userId: " + userId);
-        System.out.println("Home - Session name: " + name);
-    
-        if (userId == null) {
-            return "redirect:/login";
-        }
-    
-        model.addAttribute("userId", userId);
-        model.addAttribute("name", name);
-    
-        return "home";
-    }    
+        return "redirect:/recipes/home";
+    }   
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {

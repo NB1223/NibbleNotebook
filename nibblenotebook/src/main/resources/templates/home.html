@@ -7,7 +7,21 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f8;
             margin: 0;
-            padding: 40px;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
         }
 
         .user-info {
@@ -16,9 +30,6 @@
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .user-text {
@@ -35,6 +46,9 @@
             text-decoration: none;
             font-weight: bold;
             transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
         }
 
         .logout-btn:hover {
@@ -42,68 +56,155 @@
         }
 
         h1 {
-            text-align: center;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
-        p {
-            text-align: center;
-            color: #555;
-            margin-bottom: 40px;
+        .nav-menu {
+            margin-top: 40px;
         }
 
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .button-link {
+        .nav-link {
             display: block;
-            padding: 14px 20px;
-            background-color: #2196F3;
+            padding: 12px 15px;
             color: white;
-            text-align: center;
             text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
             transition: background-color 0.3s ease;
         }
 
-        .button-link:hover {
-            background-color: #1976D2;
+        .nav-link:hover {
+            background-color: #34495e;
         }
 
-        @media (max-width: 600px) {
-            .button-group {
+        .nav-link.active {
+            background-color: #3498db;
+            font-weight: bold;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .recipe-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .recipe-content {
+            padding: 15px;
+        }
+
+        .recipe-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .recipe-description {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 768px) {
+            body {
                 grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="user-info">
-        <div class="user-text">
-            <h2>Welcome, <span th:text="${name}">User</span>!</h2>
-            <p>User ID: <span th:text="${userId}">ID</span></p>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link active">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
         </div>
+        
         <a th:href="@{/logout}" class="logout-btn">Logout</a>
     </div>
-    
-    <h1>Nibble Notebook</h1>
-    <p>You are successfully logged in and can now access all features.</p>
 
-    <div class="button-group">
-        <a th:href="@{/search}" class="button-link">Search Recipes</a>
-        <a th:href="@{/recipes/my-recipes}" class="button-link">My Recipes</a>
-        <a th:href="@{/my-meals}" class="button-link">My Meals</a>
-        <a th:href="@{/my-pantry}" class="button-link">My Pantry</a>
-        <a th:href="@{/recipes/add-recipe}" class="button-link">+ Add Recipe</a>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="user-info">
+            <div class="user-text">
+                <h2>Welcome, <span th:text="${name}">User</span>!</h2>
+                <p>Browse all recipes below or use the sidebar to navigate</p>
+            </div>
+        </div>
+        
+        <h1>All Recipes</h1>
+        
+        <div class="recipes-grid" th:if="${not #lists.isEmpty(recipes)}">
+            <div class="recipe-card" th:each="recipe : ${recipes}">
+                <div class="recipe-content">
+                    <h3 class="recipe-title" th:text="${recipe.name}">Recipe Name</h3>
+                    <div class="recipe-meta">
+                        <span th:text="${recipe.cuisine}">Cuisine</span>
+                        <span th:text="${recipe.time} + ' mins'">Time</span>
+                    </div>
+                    <p class="recipe-description" th:text="${recipe.description}">
+                        Recipe description goes here...
+                    </p>
+                    <a th:href="@{'/recipes/' + ${recipe.id} + '/view'}" class="view-btn">View Recipe</a>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${#lists.isEmpty(recipes)}">
+            <p>No recipes found. Be the first to add one!</p>
+        </div>
     </div>
 
 </body>
