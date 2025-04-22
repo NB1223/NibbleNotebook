@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Meal Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .meal-details {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .meal-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .meal-time {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .recipe-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .recipe-description {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .actions a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: rgb(43, 177, 235);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .actions a:hover {
+            background-color: rgb(30, 150, 210);
+        }
+    </style>
+</head>
+<body>
+
+<div class="meal-details">
+    <h1 th:text="${meal.name}">Meal Name</h1>
+    <h2 th:text="${meal.time}">Meal Time</h2>
+
+    <div class="recipe-name" th:text="${recipe.name}">Recipe Name</div>
+    <div class="recipe-description" th:text="${recipe.description}">Recipe Description</div>
+
+    <h1>My Meal: <span th:text="${meal.name}"></span></h1>  <!-- Display the meal's name -->
+    <p th:text="${meal.description}"></p>  <!-- Display the meal's description -->
+
+    <div class="actions">
+        <a th:href="@{'/my-meals'}">Back to My Meals</a>
+    </div>
+</div>
+
+</body>
+</html>
