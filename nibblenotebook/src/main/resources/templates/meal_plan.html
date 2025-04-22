@@ -299,6 +299,12 @@
             </div>
         </div>
         
+        <!-- Error Message Display -->
+        <div th:if="${errorMessage != null}" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h4>Error</h4>
+            <p th:text="${errorMessage}">Error message will appear here</p>
+        </div>
+        
         <h1>Weekly Meal Plan</h1>
         
         <a th:href="@{/shopping-list}" class="shopping-list-btn">Generate Shopping List</a>
@@ -330,46 +336,52 @@
                 </div>
 
                 <div class="meal-selection">
-                    <div th:each="meal : ${meals}" class="meal-option">
+                    <div th:if="${meals != null && !meals.isEmpty()}" th:each="meal : ${meals}" class="meal-option">
                         <input type="checkbox" name="mealIds" th:value="${meal.id}" th:id="${'meal-' + meal.id}">
                         <label th:for="${'meal-' + meal.id}" class="meal-option-label">
                             <span class="meal-option-name" th:text="${meal.name}">Meal Name</span>
                             <span class="meal-option-time" th:text="${meal.time}">Meal Time</span>
                         </label>
                     </div>
+                    <div th:if="${meals == null || meals.isEmpty()}" style="grid-column: span 2; padding: 20px; text-align: center; color: #6c757d;">
+                        You haven't created any meals yet. <a th:href="@{/add-meal}" style="color: rgb(43, 177, 235);">Create a meal</a> first to add to your plan.
+                    </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Add to Meal Plan</button>
+                <button type="submit" class="submit-btn" th:disabled="${meals == null || meals.isEmpty()}">Add to Meal Plan</button>
             </form>
         </div>
         
         <!-- Meal Plan Grid -->
-        <div class="meal-plan-grid" th:if="${not #lists.isEmpty(mealPlans)}">
-            <div class="day-column" th:each="day : ${days}" th:with="dayPlans=${#lists.isEmpty(mealPlans) ? {} : mealPlans.?[day == day]}">
+        <div class="meal-plan-grid" th:if="${mealPlans != null && !mealPlans.isEmpty()}">
+            <div class="day-column" th:each="day : ${days}">
                 <div class="day-header" th:text="${day}">Day</div>
                 
                 <div class="meal-slots">
                     <div class="meal-slot" th:each="mealTime : ${mealTimes}">
                         <div class="meal-time" th:text="${mealTime}">Meal Time</div>
                         
-                        <div th:if="${not #lists.isEmpty(dayPlans)}">
-                            <div th:each="plan : ${dayPlans}">
+                        <div th:with="dayPlans=${mealPlans.?[day == day]}">
+                            <div th:if="${dayPlans != null && !dayPlans.isEmpty()}" th:each="plan : ${dayPlans}">
                                 <div th:if="${plan.meals != null}" th:each="meal : ${plan.getMealsForTime(mealTime)}" class="meal-item">
                                     <div class="meal-name" th:text="${meal != null ? meal.name : ''}">Meal Name</div>
-                                    <div class="meal-recipes" th:if="${meal != null && meal.recipes != null}" th:text="${meal.recipes.size()} + ' recipes'">Recipe Count</div>
+                                    <div class="meal-recipes" th:if="${meal != null && meal.recipes != null}" 
+                                         th:text="${meal.recipes != null ? meal.recipes.size() : 0} + ' recipes'">Recipe Count</div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div th:if="${#lists.isEmpty(dayPlans) || dayPlans[0] == null || dayPlans[0].getMealsForTime(mealTime) == null || #lists.isEmpty(dayPlans[0].getMealsForTime(mealTime))}">
-                            <p style="color: #7f8c8d; font-size: 14px;">No meals planned</p>
+                            
+                            <div th:if="${dayPlans == null || dayPlans.isEmpty() || 
+                                          (dayPlans[0] != null && dayPlans[0].getMealsForTime(mealTime) != null && 
+                                           dayPlans[0].getMealsForTime(mealTime).isEmpty())}">
+                                <p style="color: #7f8c8d; font-size: 14px;">No meals planned</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="empty-plan" th:if="${#lists.isEmpty(mealPlans)}">
+        <div class="empty-plan" th:if="${mealPlans == null || mealPlans.isEmpty()}">
             <h3>No Meal Plan Yet</h3>
             <p>You haven't created a meal plan yet. Use the form above to start planning your meals for the week.</p>
         </div>

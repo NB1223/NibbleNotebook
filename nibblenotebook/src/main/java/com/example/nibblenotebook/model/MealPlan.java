@@ -20,7 +20,7 @@ public class MealPlan {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "\"day\"", nullable = false)
     private DayOfWeek day;
 
     @ManyToMany

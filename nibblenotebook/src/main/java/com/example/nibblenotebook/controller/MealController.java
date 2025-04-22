@@ -109,36 +109,49 @@ public class MealController {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) return "redirect:/login";
         
-        List<MealPlan> mealPlans = mealPlanRepository.findByUser(user);
-        if (mealPlans == null) {
-            mealPlans = new ArrayList<>();
+        try {
+            System.out.println("Fetching meal plans for user ID: " + userId);
+            
+            List<MealPlan> mealPlans = mealPlanRepository.findByUser(user);
+            System.out.println("Found " + (mealPlans != null ? mealPlans.size() : 0) + " meal plans");
+            
+            List<Meal> userMeals = mealRepository.findByUser(user);
+            System.out.println("Found " + (userMeals != null ? userMeals.size() : 0) + " meals for user");
+            
+            // Organize meal plans by day
+            if (mealPlans != null && !mealPlans.isEmpty()) {
+                mealPlans.sort((mp1, mp2) -> mp1.getDay().ordinal() - mp2.getDay().ordinal());
+            }
+            
+            model.addAttribute("mealPlans", mealPlans != null ? mealPlans : new ArrayList<>());
+            model.addAttribute("meals", userMeals != null ? userMeals : new ArrayList<>());
+            model.addAttribute("days", MealPlan.DayOfWeek.values());
+            model.addAttribute("mealTimes", Meal.MealTime.values());
+            model.addAttribute("name", session.getAttribute("name"));
+            
+            return "meal_plan";
+        } catch (Exception e) {
+            System.err.println("Error loading meal plan: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Add default empty lists to prevent template errors
+            model.addAttribute("mealPlans", new ArrayList<>());
+            model.addAttribute("meals", new ArrayList<>());
+            model.addAttribute("days", MealPlan.DayOfWeek.values());
+            model.addAttribute("mealTimes", Meal.MealTime.values());
+            model.addAttribute("name", session.getAttribute("name"));
+            model.addAttribute("errorMessage", "Error loading meal plan: " + e.getMessage());
+            
+            return "meal_plan";
         }
-        
-        List<Meal> userMeals = mealRepository.findByUser(user);
-        if (userMeals == null) {
-            userMeals = new ArrayList<>();
-        }
-        
-        // Organize meal plans by day
-        if (!mealPlans.isEmpty()) {
-            mealPlans.sort((mp1, mp2) -> mp1.getDay().ordinal() - mp2.getDay().ordinal());
-        }
-        
-        model.addAttribute("mealPlans", mealPlans);
-        model.addAttribute("meals", userMeals);
-        model.addAttribute("days", MealPlan.DayOfWeek.values());
-        model.addAttribute("mealTimes", Meal.MealTime.values());
-        model.addAttribute("name", session.getAttribute("name"));
-        
-        return "meal_plan";
     }
     
     // Process add to meal plan form
     @PostMapping("/add-to-meal-plan")
     public String addToMealPlan(@RequestParam MealPlan.DayOfWeek day,
-                              @RequestParam Meal.MealTime mealTime,
-                              @RequestParam(required = false) List<Integer> mealIds,
-                              HttpSession session) {
+                              @RequestParam(name = "mealTime") Meal.MealTime mealTime,
+                              @RequestParam(name = "mealIds", required = false) List<Integer> mealIds,
+                              HttpSession session, Model model) {
                               
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
@@ -146,45 +159,65 @@ public class MealController {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) return "redirect:/login";
         
-        // Check if meal plan for this day already exists
-        List<MealPlan> existingPlans = mealPlanRepository.findByUserAndDay(user, day);
-        MealPlan mealPlan;
-        
-        if (existingPlans != null && !existingPlans.isEmpty()) {
-            mealPlan = existingPlans.get(0);
+        try {
+            System.out.println("Adding to meal plan for user ID: " + userId);
+            System.out.println("Day: " + day + ", Meal Time: " + mealTime);
+            System.out.println("Selected meal IDs: " + (mealIds != null ? mealIds : "none"));
             
-            // Don't clear existing meals, just manage the ones for this meal time
-            List<Meal> currentMeals = new ArrayList<>();
-            if (mealPlan.getMeals() != null) {
-                currentMeals.addAll(mealPlan.getMeals());
+            // Check if meal plan for this day already exists
+            List<MealPlan> existingPlans = mealPlanRepository.findByUserAndDay(user, day);
+            MealPlan mealPlan;
+            
+            if (existingPlans != null && !existingPlans.isEmpty()) {
+                mealPlan = existingPlans.get(0);
+                System.out.println("Found existing meal plan ID: " + mealPlan.getId());
+                
+                // Don't clear existing meals, just manage the ones for this meal time
+                List<Meal> currentMeals = new ArrayList<>();
+                if (mealPlan.getMeals() != null) {
+                    currentMeals.addAll(mealPlan.getMeals());
+                }
+                
+                // Remove meals for this specific meal time
+                currentMeals.removeIf(meal -> meal != null && meal.getTime() == mealTime);
+                System.out.println("Removed existing meals for meal time: " + mealTime);
+                
+                // Keep the filtered meals (other meal times)
+                mealPlan.setMeals(currentMeals);
+            } else {
+                mealPlan = new MealPlan();
+                mealPlan.setUser(user);
+                mealPlan.setDay(day);
+                mealPlan.setMeals(new ArrayList<>());
+                System.out.println("Created new meal plan for day: " + day);
             }
             
-            // Remove meals for this specific meal time
-            currentMeals.removeIf(meal -> meal != null && meal.getTime() == mealTime);
-            
-            // Keep the filtered meals (other meal times)
-            mealPlan.setMeals(currentMeals);
-        } else {
-            mealPlan = new MealPlan();
-            mealPlan.setUser(user);
-            mealPlan.setDay(day);
-            mealPlan.setMeals(new ArrayList<>());
-        }
-        
-        // Add selected meals for this meal time
-        if (mealIds != null && !mealIds.isEmpty()) {
-            for (Integer mealId : mealIds) {
-                mealRepository.findById(mealId).ifPresent(meal -> {
-                    if (meal.getUser().getId() == userId) {
-                        mealPlan.addMeal(meal);
-                    }
-                });
+            // Add selected meals for this meal time
+            int addedCount = 0;
+            if (mealIds != null && !mealIds.isEmpty()) {
+                for (Integer mealId : mealIds) {
+                    mealRepository.findById(mealId).ifPresent(meal -> {
+                        if (meal.getUser().getId() == userId) {
+                            mealPlan.addMeal(meal);
+                            System.out.println("Added meal ID: " + meal.getId() + ", name: " + meal.getName());
+                        }
+                    });
+                    addedCount++;
+                }
+                System.out.println("Added " + addedCount + " meals to the plan");
             }
+            
+            mealPlanRepository.save(mealPlan);
+            System.out.println("Saved meal plan successfully");
+            
+            return "redirect:/meal-plan";
+        } catch (Exception e) {
+            System.err.println("Error adding to meal plan: " + e.getMessage());
+            e.printStackTrace();
+            
+            model.addAttribute("errorMessage", "Error adding to meal plan: " + e.getMessage());
+            return viewMealPlan(session, model); // Re-render the meal plan page with error
         }
-        
-        mealPlanRepository.save(mealPlan);
-        
-        return "redirect:/meal-plan";
     }
     
     // View meal details page
