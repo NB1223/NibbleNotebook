@@ -42,9 +42,9 @@
         <h2>Ingredients</h2>
         <ul>
             <li th:each="ri : ${ingredients}"
-                th:text="${ri.ingredient.name} + ' - ' + ri.quantity + ' ' + ri.ingredient.unit">
-                Ingredient - Quantity Unit
-            </li>
+            th:text="${ri.ingredient.name + ' - ' + ri.quantity + ' ' + ri.ingredient.measurementUnit}">
+            Ingredient - Quantity Unit
+            </li>        
         </ul>
     </div>
 
