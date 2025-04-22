@@ -198,6 +198,16 @@
                 display: block;
             }
         }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -214,8 +224,6 @@
             <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
             <a th:href="@{/shopping-list}" class="nav-link active">Shopping List</a>
             <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
-            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
-            <a th:href="@{/add-meal}" class="nav-link">+ Add Meal</a>
         </div>
         
         <a th:href="@{/logout}" class="logout-btn">Logout</a>
@@ -226,39 +234,32 @@
         <div class="user-info">
             <div class="user-text">
                 <h2>Welcome, <span th:text="${name}">User</span>!</h2>
-                <p>Here's your shopping list based on your meal plan</p>
+                <p>Here's what you need to buy for your planned meals</p>
             </div>
         </div>
         
         <h1>Shopping List</h1>
         
         <div class="action-btns">
-            <a th:href="@{/meal-plan}" class="action-btn meal-plan-btn">Back to Meal Plan</a>
-            <a th:href="@{/my-pantry}" class="action-btn pantry-btn">View My Pantry</a>
+            <a th:href="@{/meal-plan}" class="action-btn meal-plan-btn">View Meal Plan</a>
+            <a th:href="@{/my-pantry}" class="action-btn pantry-btn">Update Pantry</a>
+            <button onclick="window.print()" class="print-btn">Print List</button>
         </div>
         
-        <div class="shopping-list-card" th:if="${not #lists.isEmpty(shoppingList)}">
-            <button onclick="window.print()" class="print-btn">Print List</button>
-            
-            <div th:each="item : ${shoppingList}" class="shopping-item">
+        <div class="shopping-list-card" th:if="${shoppingList != null && !shoppingList.isEmpty()}">
+            <div class="shopping-item" th:each="item : ${shoppingList}" th:if="${item != null}">
                 <input type="checkbox" class="item-checkbox">
                 <div class="item-details">
-                    <div class="item-name" th:text="${item.ingredient.name}">Ingredient Name</div>
-                    <div class="item-quantity" th:text="${item.quantity} + ' ' + ${item.ingredient.measurementUnit}">Quantity</div>
+                    <div class="item-name" th:text="${item.ingredient != null ? item.ingredient.name : 'Unknown Ingredient'}">Ingredient Name</div>
+                    <div class="item-quantity" th:if="${item.ingredient != null}" th:text="${#numbers.formatDecimal(item.quantity, 1, 2) + ' ' + item.ingredient.measurementUnit}">Quantity</div>
                 </div>
             </div>
         </div>
         
-        <div class="empty-list" th:if="${#lists.isEmpty(shoppingList)}">
-            <h3>Your Shopping List is Empty</h3>
-            <p class="empty-text">There are no items in your shopping list. This could be because:</p>
-            <ul style="text-align: left; display: inline-block;">
-                <li>You haven't created a meal plan yet</li>
-                <li>You already have all necessary ingredients in your pantry</li>
-            </ul>
-            <div style="margin-top: 20px;">
-                <a th:href="@{/meal-plan}" class="action-btn meal-plan-btn">Create a Meal Plan</a>
-            </div>
+        <div class="empty-list" th:if="${shoppingList == null || shoppingList.isEmpty()}">
+            <h3>Your shopping list is empty</h3>
+            <p class="empty-text">Add meals to your meal plan to generate a shopping list based on recipes and your pantry.</p>
+            <a th:href="@{/meal-plan}" class="action-btn meal-plan-btn">Plan Your Meals</a>
         </div>
     </div>
 

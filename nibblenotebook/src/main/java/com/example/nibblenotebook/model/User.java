@@ -144,30 +144,66 @@ public class User {
     public List<ShoppingListItem> generateShoppingList() {
         List<ShoppingListItem> shoppingList = new ArrayList<>();
         
-        // Calculate required ingredients from meal plans
-        if (mealPlans != null) {
-            for (MealPlan mealPlan : mealPlans) {
-                for (Meal meal : mealPlan.getMeals()) {
-                    for (Recipe recipe : meal.getRecipes()) {
-                        for (RecipeIngredient ri : recipe.getIngredients()) {
-                            addToShoppingList(shoppingList, ri.getIngredient(), ri.getQuantity());
+        try {
+            // Calculate required ingredients from meal plans
+            if (mealPlans != null && !mealPlans.isEmpty()) {
+                for (MealPlan mealPlan : mealPlans) {
+                    if (mealPlan != null && mealPlan.getMeals() != null && !mealPlan.getMeals().isEmpty()) {
+                        for (Meal meal : mealPlan.getMeals()) {
+                            if (meal != null && meal.getRecipes() != null && !meal.getRecipes().isEmpty()) {
+                                for (Recipe recipe : meal.getRecipes()) {
+                                    if (recipe != null && recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()) {
+                                        for (RecipeIngredient ri : recipe.getIngredients()) {
+                                            if (ri != null && ri.getIngredient() != null) {
+                                                addToShoppingList(shoppingList, ri.getIngredient(), ri.getQuantity());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-        
-        // Subtract ingredients already in pantry
-        if (userIngredients != null) {
-            for (UserIngredient ui : userIngredients) {
-                subtractFromShoppingList(shoppingList, ui.getIngredient(), ui.getQuantity());
+            
+            // Subtract ingredients already in pantry
+            if (userIngredients != null && !userIngredients.isEmpty()) {
+                List<ShoppingListItem> itemsToRemove = new ArrayList<>();
+                
+                for (UserIngredient ui : userIngredients) {
+                    if (ui != null && ui.getIngredient() != null) {
+                        for (ShoppingListItem item : shoppingList) {
+                            if (item.getIngredient().getId() == ui.getIngredient().getId()) {
+                                double newQuantity = item.getQuantity() - ui.getQuantity();
+                                if (newQuantity <= 0) {
+                                    itemsToRemove.add(item);
+                                } else {
+                                    item.setQuantity(newQuantity);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                shoppingList.removeAll(itemsToRemove);
             }
+        } catch (Exception e) {
+            // Log the error - in a production app, use a logger
+            System.err.println("Error in generateShoppingList: " + e.getMessage());
+            e.printStackTrace();
+            // Return an empty list in case of error
+            return new ArrayList<>();
         }
         
         return shoppingList;
     }
     
     private void addToShoppingList(List<ShoppingListItem> list, Ingredient ingredient, double quantity) {
+        if (list == null || ingredient == null) {
+            return;
+        }
+        
         // Find if ingredient already exists in list
         for (ShoppingListItem item : list) {
             if (item.getIngredient().getId() == ingredient.getId()) {
@@ -178,20 +214,6 @@ public class User {
         
         // If not found, add new
         list.add(new ShoppingListItem(ingredient, quantity));
-    }
-    
-    private void subtractFromShoppingList(List<ShoppingListItem> list, Ingredient ingredient, double quantity) {
-        for (ShoppingListItem item : list) {
-            if (item.getIngredient().getId() == ingredient.getId()) {
-                double newQuantity = item.getQuantity() - quantity;
-                if (newQuantity <= 0) {
-                    list.remove(item);
-                } else {
-                    item.setQuantity(newQuantity);
-                }
-                return;
-            }
-        }
     }
     
     // Inner class for shopping list items

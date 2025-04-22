@@ -285,8 +285,6 @@
             <a th:href="@{/meal-plan}" class="nav-link active">Meal Plan</a>
             <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
             <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
-            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
-            <a th:href="@{/add-meal}" class="nav-link">+ Add Meal</a>
         </div>
         
         <a th:href="@{/logout}" class="logout-btn">Logout</a>
@@ -307,45 +305,47 @@
         
         <!-- Add to Meal Plan Form -->
         <div class="plan-form">
-            <h3>Add Meals to Your Plan</h3>
-            
+            <h2>Add to Meal Plan</h2>
             <form th:action="@{/add-to-meal-plan}" method="post">
-                <div class="form-group">
-                    <label for="day">Select Day</label>
-                    <select id="day" name="day" required>
-                        <option value="">Choose a day</option>
-                        <option th:each="day : ${days}" th:value="${day}" th:text="${day}">Day</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Select Meals</label>
-                    
-                    <div class="meal-selection" th:if="${not #lists.isEmpty(meals)}">
-                        <div class="meal-option" th:each="meal : ${meals}">
-                            <input type="checkbox" class="meal-checkbox" 
-                                   th:id="${'meal-' + meal.id}" 
-                                   name="mealIds" 
-                                   th:value="${meal.id}">
-                            <div>
-                                <div class="meal-name" th:text="${meal.name}">Meal Name</div>
-                                <div class="meal-meta" th:text="${meal.time}">Meal Time</div>
-                            </div>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="day">Day</label>
+                        <select id="day" name="day" required>
+                            <option value="" disabled selected>Select Day</option>
+                            <option th:each="dayOption : ${days}" 
+                                    th:value="${dayOption}" 
+                                    th:text="${dayOption}"></option>
+                        </select>
                     </div>
                     
-                    <div th:if="${#lists.isEmpty(meals)}">
-                        <p>You don't have any meals yet. <a th:href="@{/add-meal}">Create some meals</a> first to add to your plan.</p>
+                    <div class="form-group">
+                        <label for="mealTime">Meal Time</label>
+                        <select id="mealTime" name="mealTime" required>
+                            <option value="" disabled selected>Select Meal Time</option>
+                            <option th:each="timeOption : ${mealTimes}" 
+                                    th:value="${timeOption}" 
+                                    th:text="${timeOption}"></option>
+                        </select>
                     </div>
                 </div>
-                
-                <button type="submit" class="submit-btn" th:unless="${#lists.isEmpty(meals)}">Update Meal Plan</button>
+
+                <div class="meal-selection">
+                    <div th:each="meal : ${meals}" class="meal-option">
+                        <input type="checkbox" name="mealIds" th:value="${meal.id}" th:id="${'meal-' + meal.id}">
+                        <label th:for="${'meal-' + meal.id}" class="meal-option-label">
+                            <span class="meal-option-name" th:text="${meal.name}">Meal Name</span>
+                            <span class="meal-option-time" th:text="${meal.time}">Meal Time</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Add to Meal Plan</button>
             </form>
         </div>
         
         <!-- Meal Plan Grid -->
         <div class="meal-plan-grid" th:if="${not #lists.isEmpty(mealPlans)}">
-            <div class="day-column" th:each="day : ${days}" th:with="dayPlans=${mealPlans.?[day == day]}">
+            <div class="day-column" th:each="day : ${days}" th:with="dayPlans=${#lists.isEmpty(mealPlans) ? {} : mealPlans.?[day == day]}">
                 <div class="day-header" th:text="${day}">Day</div>
                 
                 <div class="meal-slots">
@@ -354,14 +354,14 @@
                         
                         <div th:if="${not #lists.isEmpty(dayPlans)}">
                             <div th:each="plan : ${dayPlans}">
-                                <div th:each="meal : ${plan.getMealsForTime(mealTime)}" class="meal-item">
-                                    <div class="meal-name" th:text="${meal.name}">Meal Name</div>
-                                    <div class="meal-recipes" th:text="${meal.recipes.size()} + ' recipes'">Recipe Count</div>
+                                <div th:if="${plan.meals != null}" th:each="meal : ${plan.getMealsForTime(mealTime)}" class="meal-item">
+                                    <div class="meal-name" th:text="${meal != null ? meal.name : ''}">Meal Name</div>
+                                    <div class="meal-recipes" th:if="${meal != null && meal.recipes != null}" th:text="${meal.recipes.size()} + ' recipes'">Recipe Count</div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div th:if="${#lists.isEmpty(dayPlans) or #lists.isEmpty(dayPlans[0].getMealsForTime(mealTime))}">
+                        <div th:if="${#lists.isEmpty(dayPlans) || dayPlans[0] == null || dayPlans[0].getMealsForTime(mealTime) == null || #lists.isEmpty(dayPlans[0].getMealsForTime(mealTime))}">
                             <p style="color: #7f8c8d; font-size: 14px;">No meals planned</p>
                         </div>
                     </div>

@@ -1,9 +1,11 @@
 package com.example.nibblenotebook.repository;
 
 import com.example.nibblenotebook.model.Recipe;
+import com.example.nibblenotebook.model.RecipeIngredient;
 import com.example.nibblenotebook.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
@@ -14,4 +16,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
     
     @Query("SELECT DISTINCT r.cuisine FROM Recipe r ORDER BY r.cuisine")
     List<String> findDistinctCuisines();
+    
+    @Query("SELECT ri FROM RecipeIngredient ri WHERE ri.recipe.id = :recipeId")
+    List<RecipeIngredient> findIngredientsForRecipe(@Param("recipeId") int recipeId);
 }

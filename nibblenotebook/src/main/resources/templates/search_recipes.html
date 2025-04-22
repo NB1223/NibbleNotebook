@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Recipes - Nibble Notebook</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .user-info {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .user-text {
+            color: #333;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .filter-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1 1 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 28px;
+        }
+
+        .checkbox-group input {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .submit-btn {
+            background-color: rgb(43, 177, 235);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #1d8fc5;
+        }
+
+        .clear-btn {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .clear-btn:hover {
+            background-color: #7f8c8d;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .recipe-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .recipe-content {
+            padding: 15px;
+        }
+
+        .recipe-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .recipe-description {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: rgb(43, 177, 235);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background-color: #1d8fc5;
+        }
+
+        .veg-badge {
+            background-color: #27ae60;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link active">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+        </div>
+        
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="user-info">
+            <div class="user-text">
+                <h2>Welcome, <span th:text="${name}">User</span>!</h2>
+                <p>Find recipes that match your preferences</p>
+            </div>
+        </div>
+        
+        <h1>Search Recipes</h1>
+        
+        <!-- Filter Section -->
+        <div class="filter-container">
+            <form class="filter-form" th:action="@{/search}" method="get">
+                <div class="form-group">
+                    <label for="cuisine">Cuisine</label>
+                    <select class="form-control" id="cuisine" name="cuisine">
+                        <option value="">All Cuisines</option>
+                        <option th:each="c : ${cuisines}" 
+                                th:value="${c}" 
+                                th:text="${c}"
+                                th:selected="${c == selectedCuisine}"></option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="maxTime">Maximum Time (minutes)</label>
+                    <input type="number" class="form-control" id="maxTime" name="maxTime" 
+                           min="1" step="1" th:value="${maxTime}">
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="vegetarian" name="vegetarian" value="true" 
+                           th:checked="${vegetarian == true}">
+                    <label for="vegetarian">Vegetarian Only</label>
+                </div>
+                
+                <div>
+                    <button type="submit" class="submit-btn">Search</button>
+                    <a th:href="@{/search}" class="clear-btn">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="recipes-grid" th:if="${!recipes.empty}">
+            <div class="recipe-card" th:each="recipe : ${recipes}">
+                <div class="recipe-content">
+                    <h3 class="recipe-title">
+                        <span th:text="${recipe.name}">Recipe Name</span>
+                        <span class="veg-badge" th:if="${recipe.vegetarian}">Veg</span>
+                    </h3>
+                    <div class="recipe-meta">
+                        <span th:text="${recipe.cuisine}">Cuisine</span>
+                        <span th:text="${recipe.time} + ' min'">Time</span>
+                    </div>
+                    <p class="recipe-description" th:text="${recipe.description}">
+                        Recipe description goes here.
+                    </p>
+                    <a th:href="@{/recipes/{id}/view(id=${recipe.id})}" class="view-btn">View Recipe</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="no-results" th:if="${recipes.empty}">
+            <h3>No recipes found matching your criteria</h3>
+            <p>Try adjusting your filters or <a th:href="@{/search}">clear all filters</a> to see all recipes.</p>
+        </div>
+    </div>
+
+</body>
+</html> 

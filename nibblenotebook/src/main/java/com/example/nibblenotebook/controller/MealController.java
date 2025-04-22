@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 public class MealController {
@@ -45,7 +46,7 @@ public class MealController {
         
         List<Meal> meals = mealRepository.findByUser(user);
         
-        model.addAttribute("meals", meals);
+        model.addAttribute("meals", meals != null ? meals : new ArrayList<>());
         model.addAttribute("name", session.getAttribute("name"));
         
         return "my_meals";
@@ -62,7 +63,7 @@ public class MealController {
         
         List<Recipe> userRecipes = recipeRepository.findByUser(user);
         
-        model.addAttribute("recipes", userRecipes);
+        model.addAttribute("recipes", userRecipes != null ? userRecipes : new ArrayList<>());
         model.addAttribute("mealTimes", Meal.MealTime.values());
         model.addAttribute("name", session.getAttribute("name"));
         
@@ -88,7 +89,7 @@ public class MealController {
                 .user(user)
                 .build();
         
-        if (recipeIds != null) {
+        if (recipeIds != null && !recipeIds.isEmpty()) {
             for (Integer recipeId : recipeIds) {
                 recipeRepository.findById(recipeId).ifPresent(meal::addRecipe);
             }
@@ -109,10 +110,19 @@ public class MealController {
         if (user == null) return "redirect:/login";
         
         List<MealPlan> mealPlans = mealPlanRepository.findByUser(user);
+        if (mealPlans == null) {
+            mealPlans = new ArrayList<>();
+        }
+        
         List<Meal> userMeals = mealRepository.findByUser(user);
+        if (userMeals == null) {
+            userMeals = new ArrayList<>();
+        }
         
         // Organize meal plans by day
-        mealPlans.sort((mp1, mp2) -> mp1.getDay().ordinal() - mp2.getDay().ordinal());
+        if (!mealPlans.isEmpty()) {
+            mealPlans.sort((mp1, mp2) -> mp1.getDay().ordinal() - mp2.getDay().ordinal());
+        }
         
         model.addAttribute("mealPlans", mealPlans);
         model.addAttribute("meals", userMeals);
@@ -126,6 +136,7 @@ public class MealController {
     // Process add to meal plan form
     @PostMapping("/add-to-meal-plan")
     public String addToMealPlan(@RequestParam MealPlan.DayOfWeek day,
+                              @RequestParam Meal.MealTime mealTime,
                               @RequestParam(required = false) List<Integer> mealIds,
                               HttpSession session) {
                               
@@ -139,19 +150,35 @@ public class MealController {
         List<MealPlan> existingPlans = mealPlanRepository.findByUserAndDay(user, day);
         MealPlan mealPlan;
         
-        if (!existingPlans.isEmpty()) {
+        if (existingPlans != null && !existingPlans.isEmpty()) {
             mealPlan = existingPlans.get(0);
-            // Clear existing meals
-            mealPlan.setMeals(new ArrayList<>());
+            
+            // Don't clear existing meals, just manage the ones for this meal time
+            List<Meal> currentMeals = new ArrayList<>();
+            if (mealPlan.getMeals() != null) {
+                currentMeals.addAll(mealPlan.getMeals());
+            }
+            
+            // Remove meals for this specific meal time
+            currentMeals.removeIf(meal -> meal != null && meal.getTime() == mealTime);
+            
+            // Keep the filtered meals (other meal times)
+            mealPlan.setMeals(currentMeals);
         } else {
             mealPlan = new MealPlan();
             mealPlan.setUser(user);
             mealPlan.setDay(day);
+            mealPlan.setMeals(new ArrayList<>());
         }
         
-        if (mealIds != null) {
+        // Add selected meals for this meal time
+        if (mealIds != null && !mealIds.isEmpty()) {
             for (Integer mealId : mealIds) {
-                mealRepository.findById(mealId).ifPresent(mealPlan::addMeal);
+                mealRepository.findById(mealId).ifPresent(meal -> {
+                    if (meal.getUser().getId() == userId) {
+                        mealPlan.addMeal(meal);
+                    }
+                });
             }
         }
         
@@ -205,7 +232,117 @@ public class MealController {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) return "redirect:/login";
         
-        List<User.ShoppingListItem> shoppingList = user.generateShoppingList();
+        List<ShoppingListItem> shoppingList = new ArrayList<>();
+        
+        try {
+            System.out.println("Starting shopping list generation for user ID: " + userId);
+            
+            // Create manual shopping list instead of navigating through relationships
+            // Step 1: Get all meal plans for this user
+            List<MealPlan> userMealPlans = mealPlanRepository.findByUser(user);
+            System.out.println("Found " + (userMealPlans != null ? userMealPlans.size() : 0) + " meal plans");
+            
+            if (userMealPlans != null && !userMealPlans.isEmpty()) {
+                // Step 2: Get all ingredients across all recipes in meals in these meal plans
+                Map<Integer, ShoppingListItem> ingredientMap = new HashMap<>();
+                
+                for (MealPlan mealPlan : userMealPlans) {
+                    System.out.println("Processing meal plan ID: " + mealPlan.getId() + " for day: " + mealPlan.getDay());
+                    
+                    // Get all meals for this meal plan
+                    List<Meal> meals = mealPlan.getMeals();
+                    System.out.println("  Found " + (meals != null ? meals.size() : 0) + " meals in this plan");
+                    
+                    if (meals != null) {
+                        for (Meal meal : meals) {
+                            if (meal != null) {
+                                System.out.println("    Processing meal ID: " + meal.getId() + ", name: " + meal.getName());
+                                List<Recipe> recipes = meal.getRecipes();
+                                System.out.println("      Found " + (recipes != null ? recipes.size() : 0) + " recipes in this meal");
+                                
+                                // Each meal has recipes
+                                if (recipes != null) {
+                                    for (Recipe recipe : recipes) {
+                                        if (recipe != null) {
+                                            System.out.println("        Processing recipe ID: " + recipe.getId() + ", name: " + recipe.getName());
+                                            
+                                            // Manually fetch recipe ingredients 
+                                            List<RecipeIngredient> ingredients = recipeRepository.findIngredientsForRecipe(recipe.getId());
+                                            System.out.println("          Found " + (ingredients != null ? ingredients.size() : 0) + " ingredients");
+                                            
+                                            if (ingredients != null) {
+                                                for (RecipeIngredient ri : ingredients) {
+                                                    if (ri != null && ri.getIngredient() != null) {
+                                                        int ingredientId = ri.getIngredient().getId();
+                                                        double quantity = ri.getQuantity();
+                                                        
+                                                        System.out.println("            Adding ingredient: " + ri.getIngredient().getName() + 
+                                                                          ", quantity: " + quantity);
+                                                        
+                                                        // If already in map, add quantity
+                                                        if (ingredientMap.containsKey(ingredientId)) {
+                                                            ShoppingListItem existingItem = ingredientMap.get(ingredientId);
+                                                            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+                                                            System.out.println("              Updated quantity to: " + existingItem.getQuantity());
+                                                        } else {
+                                                            // Otherwise create new
+                                                            ShoppingListItem newItem = new ShoppingListItem(ri.getIngredient(), quantity);
+                                                            ingredientMap.put(ingredientId, newItem);
+                                                            System.out.println("              Added new item");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                System.out.println("Finished collecting required ingredients. Total items: " + ingredientMap.size());
+                
+                // Step 3: Subtract ingredients already in pantry
+                List<UserIngredient> pantryItems = userRepository.findPantryItemsForUser(userId);
+                System.out.println("Found " + (pantryItems != null ? pantryItems.size() : 0) + " pantry items");
+                
+                if (pantryItems != null) {
+                    for (UserIngredient ui : pantryItems) {
+                        if (ui != null && ui.getIngredient() != null) {
+                            int ingredientId = ui.getIngredient().getId();
+                            System.out.println("  Checking pantry item: " + ui.getIngredient().getName() + ", quantity: " + ui.getQuantity());
+                            
+                            if (ingredientMap.containsKey(ingredientId)) {
+                                ShoppingListItem item = ingredientMap.get(ingredientId);
+                                double newQuantity = item.getQuantity() - ui.getQuantity();
+                                System.out.println("    Found in shopping list. Adjusting from " + item.getQuantity() + " to " + newQuantity);
+                                
+                                if (newQuantity <= 0) {
+                                    // Remove if we have enough or more
+                                    ingredientMap.remove(ingredientId);
+                                    System.out.println("    Removed from shopping list (sufficient quantity in pantry)");
+                                } else {
+                                    // Update quantity if we need more
+                                    item.setQuantity(newQuantity);
+                                    System.out.println("    Updated quantity to: " + newQuantity);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Convert map to list
+                shoppingList = new ArrayList<>(ingredientMap.values());
+                System.out.println("Final shopping list contains " + shoppingList.size() + " items");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error generating shopping list: " + e.getMessage());
+            e.printStackTrace();
+            // Add the error message to the model for debugging
+            model.addAttribute("errorMessage", "Error: " + e.getMessage());
+        }
         
         model.addAttribute("shoppingList", shoppingList);
         model.addAttribute("name", session.getAttribute("name"));

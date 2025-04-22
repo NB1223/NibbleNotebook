@@ -12,7 +12,7 @@ java -version
 ./mvnw clean install
 ./mvnw spring-boot:run
 
-export JAVA_HOME=$OLD_JAVA_HOME
+    export JAVA_HOME=$OLD_JAVA_HOME
 export PATH=$OLD_PATH
 
 echo "Build completed. Reverted to Java 8:"

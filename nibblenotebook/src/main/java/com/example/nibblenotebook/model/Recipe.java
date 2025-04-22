@@ -19,7 +19,7 @@ public class Recipe {
     private String name;
     private String description;
     private String cuisine;
-    private double time;
+    private int time;
     
     @Column(nullable = false)
     private boolean vegetarian = false;
@@ -53,8 +53,8 @@ public class Recipe {
     public String getCuisine() { return cuisine; }
     public void setCuisine(String cuisine) { this.cuisine = cuisine; }
 
-    public double getTime() { return time; }
-    public void setTime(double time) { this.time = time; }
+    public int getTime() { return time; }
+    public void setTime(int time) { this.time = time; }
     
     public boolean isVegetarian() { return vegetarian; }
     public void setVegetarian(boolean vegetarian) { this.vegetarian = vegetarian; }

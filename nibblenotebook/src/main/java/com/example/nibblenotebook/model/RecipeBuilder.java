@@ -9,7 +9,7 @@ public class RecipeBuilder {
     private String name;
     private String description;
     private String cuisine;
-    private double time;
+    private int time;
     private boolean vegetarian;
     private List<RecipeStep> steps = new ArrayList<>();
     private List<RecipeIngredient> ingredients = new ArrayList<>();
@@ -41,7 +41,7 @@ public class RecipeBuilder {
         return this;
     }
 
-    public RecipeBuilder time(double time) {
+    public RecipeBuilder time(int time) {
         this.time = time;
         return this;
     }

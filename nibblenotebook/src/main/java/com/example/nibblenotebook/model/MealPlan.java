@@ -67,8 +67,13 @@ public class MealPlan {
     // Get meals for a specific time
     public List<Meal> getMealsForTime(Meal.MealTime mealTime) {
         List<Meal> filteredMeals = new ArrayList<>();
+        
+        if (mealTime == null || meals == null) {
+            return filteredMeals;
+        }
+        
         for (Meal meal : meals) {
-            if (meal.getTime() == mealTime) {
+            if (meal != null && meal.getTime() == mealTime) {
                 filteredMeals.add(meal);
             }
         }

@@ -22,7 +22,7 @@ public class SearchController {
     public String searchRecipes(
             @RequestParam(required = false) String cuisine,
             @RequestParam(required = false) Boolean vegetarian,
-            @RequestParam(required = false) Double maxTime,
+            @RequestParam(required = false) Integer maxTime,
             HttpSession session,
             Model model) {
         

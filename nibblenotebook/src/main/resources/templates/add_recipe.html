@@ -109,7 +109,7 @@
     <input type="text" th:field="*{cuisine}" required />
 
     <label for="time">Time (in minutes):</label>
-    <input type="number" step="0.1" th:field="*{time}" required />
+    <input type="number" step="1" min="1" th:field="*{time}" required />
     
     <div class="checkbox-container">
         <input type="checkbox" th:field="*{vegetarian}" id="vegetarian" />
