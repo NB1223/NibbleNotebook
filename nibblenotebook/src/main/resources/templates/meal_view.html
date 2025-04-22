@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Meal - Nibble Notebook</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .user-info {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .user-text {
+            color: #333;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .meal-meta {
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background-color: #7f8c8d;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #6c7a89;
+        }
+
+        .meal-card {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .recipe-list {
+            margin-top: 20px;
+        }
+
+        .recipe-item {
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .recipe-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .recipe-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .recipe-info {
+            display: flex;
+            justify-content: space-between;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .recipe-description {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .recipe-btn {
+            display: inline-block;
+            background-color: rgb(43, 177, 235);
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .recipe-btn:hover {
+            background-color: rgb(33, 150, 203);
+        }
+
+        .ingredients-section {
+            margin-top: 30px;
+        }
+
+        .ingredients-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .ingredients-list {
+            column-count: 2;
+            column-gap: 30px;
+        }
+
+        .ingredient-item {
+            break-inside: avoid;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ingredient-name {
+            font-weight: bold;
+        }
+
+        .ingredient-quantity {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .ingredients-list {
+                column-count: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/my-meals}" class="nav-link active">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
+            <a th:href="@{/add-meal}" class="nav-link">+ Add Meal</a>
+        </div>
+        
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="user-info">
+            <div class="user-text">
+                <h2>Welcome, <span th:text="${name}">User</span>!</h2>
+                <p>Viewing details for meal</p>
+            </div>
+        </div>
+        
+        <a th:href="@{/my-meals}" class="back-btn">← Back to My Meals</a>
+        
+        <h1 th:text="${meal.name}">Meal Name</h1>
+        <div class="meal-meta" th:text="${meal.time}">Meal Time</div>
+        
+        <div class="meal-card">
+            <div class="card-header">
+                <h2>Recipes in this Meal</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="recipe-list" th:if="${not #lists.isEmpty(meal.recipes)}">
+                    <div class="recipe-item" th:each="recipe : ${meal.recipes}">
+                        <div class="recipe-title" th:text="${recipe.name}">Recipe Name</div>
+                        <div class="recipe-info">
+                            <span th:text="${recipe.cuisine}">Cuisine</span>
+                            <span th:text="${recipe.time} + ' mins'">Time</span>
+                        </div>
+                        <div class="recipe-description" th:text="${recipe.description}">
+                            Recipe description goes here...
+                        </div>
+                        <a th:href="@{'/recipes/' + ${recipe.id} + '/view'}" class="recipe-btn">View Recipe</a>
+                    </div>
+                </div>
+                
+                <div th:if="${#lists.isEmpty(meal.recipes)}">
+                    <p>This meal doesn't have any recipes yet.</p>
+                </div>
+                
+                <div class="ingredients-section" th:if="${not #lists.isEmpty(meal.recipes)}">
+                    <div class="ingredients-title">All Ingredients Needed</div>
+                    
+                    <div class="ingredients-list">
+                        <div class="ingredient-item" th:each="recipe : ${meal.recipes}" th:each="ingredient : ${recipe.ingredients}">
+                            <span class="ingredient-name" th:text="${ingredient.ingredient.name}">Ingredient Name</span>
+                            <span class="ingredient-quantity" th:text="${ingredient.quantity} + ' ' + ${ingredient.ingredient.measurementUnit}">Quantity</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <a th:href="@{/meal-plan}" class="recipe-btn">Add to Meal Plan</a>
+            
+            <form th:action="@{'/meals/' + ${meal.id} + '/delete'}" method="post" 
+                  onsubmit="return confirm('Are you sure you want to delete this meal?');">
+                <button type="submit" class="delete-btn">Delete Meal</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html> 

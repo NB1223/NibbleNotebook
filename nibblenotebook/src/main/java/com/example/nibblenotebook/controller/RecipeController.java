@@ -78,6 +78,7 @@ public class RecipeController {
                 .description(recipe.getDescription())
                 .cuisine(recipe.getCuisine())
                 .time(recipe.getTime())
+                .vegetarian(recipe.isVegetarian())
                 .build();
 
         recipeRepo.save(newRecipe);

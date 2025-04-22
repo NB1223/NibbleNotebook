@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Meal Plan - Nibble Notebook</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .user-info {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .user-text {
+            color: #333;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .meal-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .day-column {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .meal-slots {
+            padding: 15px;
+        }
+
+        .meal-slot {
+            margin-bottom: 20px;
+        }
+
+        .meal-time {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meal-item {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .meal-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .meal-recipes {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .add-meal-btn {
+            display: block;
+            background-color: rgb(43, 177, 235);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .add-meal-btn:hover {
+            background-color: rgb(33, 150, 203);
+        }
+
+        .plan-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .meal-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .meal-option {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .meal-checkbox {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .submit-btn {
+            background-color: rgb(43, 177, 235);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover {
+            background-color: rgb(33, 150, 203);
+        }
+
+        .empty-plan {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .shopping-list-btn {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .shopping-list-btn:hover {
+            background-color: #219653;
+        }
+
+        @media (max-width: 1200px) {
+            .meal-plan-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .meal-plan-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .meal-plan-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link active">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
+            <a th:href="@{/add-meal}" class="nav-link">+ Add Meal</a>
+        </div>
+        
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="user-info">
+            <div class="user-text">
+                <h2>Welcome, <span th:text="${name}">User</span>!</h2>
+                <p>Plan your meals for the week</p>
+            </div>
+        </div>
+        
+        <h1>Weekly Meal Plan</h1>
+        
+        <a th:href="@{/shopping-list}" class="shopping-list-btn">Generate Shopping List</a>
+        
+        <!-- Add to Meal Plan Form -->
+        <div class="plan-form">
+            <h3>Add Meals to Your Plan</h3>
+            
+            <form th:action="@{/add-to-meal-plan}" method="post">
+                <div class="form-group">
+                    <label for="day">Select Day</label>
+                    <select id="day" name="day" required>
+                        <option value="">Choose a day</option>
+                        <option th:each="day : ${days}" th:value="${day}" th:text="${day}">Day</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Select Meals</label>
+                    
+                    <div class="meal-selection" th:if="${not #lists.isEmpty(meals)}">
+                        <div class="meal-option" th:each="meal : ${meals}">
+                            <input type="checkbox" class="meal-checkbox" 
+                                   th:id="${'meal-' + meal.id}" 
+                                   name="mealIds" 
+                                   th:value="${meal.id}">
+                            <div>
+                                <div class="meal-name" th:text="${meal.name}">Meal Name</div>
+                                <div class="meal-meta" th:text="${meal.time}">Meal Time</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${#lists.isEmpty(meals)}">
+                        <p>You don't have any meals yet. <a th:href="@{/add-meal}">Create some meals</a> first to add to your plan.</p>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn" th:unless="${#lists.isEmpty(meals)}">Update Meal Plan</button>
+            </form>
+        </div>
+        
+        <!-- Meal Plan Grid -->
+        <div class="meal-plan-grid" th:if="${not #lists.isEmpty(mealPlans)}">
+            <div class="day-column" th:each="day : ${days}" th:with="dayPlans=${mealPlans.?[day == day]}">
+                <div class="day-header" th:text="${day}">Day</div>
+                
+                <div class="meal-slots">
+                    <div class="meal-slot" th:each="mealTime : ${mealTimes}">
+                        <div class="meal-time" th:text="${mealTime}">Meal Time</div>
+                        
+                        <div th:if="${not #lists.isEmpty(dayPlans)}">
+                            <div th:each="plan : ${dayPlans}">
+                                <div th:each="meal : ${plan.getMealsForTime(mealTime)}" class="meal-item">
+                                    <div class="meal-name" th:text="${meal.name}">Meal Name</div>
+                                    <div class="meal-recipes" th:text="${meal.recipes.size()} + ' recipes'">Recipe Count</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${#lists.isEmpty(dayPlans) or #lists.isEmpty(dayPlans[0].getMealsForTime(mealTime))}">
+                            <p style="color: #7f8c8d; font-size: 14px;">No meals planned</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="empty-plan" th:if="${#lists.isEmpty(mealPlans)}">
+            <h3>No Meal Plan Yet</h3>
+            <p>You haven't created a meal plan yet. Use the form above to start planning your meals for the week.</p>
+        </div>
+    </div>
+
+</body>
+</html> 

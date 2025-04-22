@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shopping List - Nibble Notebook</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .user-info {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .user-text {
+            color: #333;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .shopping-list-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .shopping-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-checkbox {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .item-quantity {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .empty-list {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-text {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .meal-plan-btn {
+            background-color: rgb(43, 177, 235);
+            color: white;
+        }
+
+        .pantry-btn {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        .meal-plan-btn:hover {
+            background-color: rgb(33, 150, 203);
+        }
+
+        .pantry-btn:hover {
+            background-color: #d35400;
+        }
+
+        .print-btn {
+            float: right;
+            background-color: #7f8c8d;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: -10px;
+        }
+
+        .print-btn:hover {
+            background-color: #6c7a89;
+        }
+
+        @media print {
+            .sidebar, .user-info, .action-btns, .print-btn, .item-checkbox {
+                display: none !important;
+            }
+
+            .main-content {
+                padding: 0;
+            }
+
+            .shopping-list-card {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background: none;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link active">Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
+            <a th:href="@{/add-meal}" class="nav-link">+ Add Meal</a>
+        </div>
+        
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="user-info">
+            <div class="user-text">
+                <h2>Welcome, <span th:text="${name}">User</span>!</h2>
+                <p>Here's your shopping list based on your meal plan</p>
+            </div>
+        </div>
+        
+        <h1>Shopping List</h1>
+        
+        <div class="action-btns">
+            <a th:href="@{/meal-plan}" class="action-btn meal-plan-btn">Back to Meal Plan</a>
+            <a th:href="@{/my-pantry}" class="action-btn pantry-btn">View My Pantry</a>
+        </div>
+        
+        <div class="shopping-list-card" th:if="${not #lists.isEmpty(shoppingList)}">
+            <button onclick="window.print()" class="print-btn">Print List</button>
+            
+            <div th:each="item : ${shoppingList}" class="shopping-item">
+                <input type="checkbox" class="item-checkbox">
+                <div class="item-details">
+                    <div class="item-name" th:text="${item.ingredient.name}">Ingredient Name</div>
+                    <div class="item-quantity" th:text="${item.quantity} + ' ' + ${item.ingredient.measurementUnit}">Quantity</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="empty-list" th:if="${#lists.isEmpty(shoppingList)}">
+            <h3>Your Shopping List is Empty</h3>
+            <p class="empty-text">There are no items in your shopping list. This could be because:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>You haven't created a meal plan yet</li>
+                <li>You already have all necessary ingredients in your pantry</li>
+            </ul>
+            <div style="margin-top: 20px;">
+                <a th:href="@{/meal-plan}" class="action-btn meal-plan-btn">Create a Meal Plan</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html> 

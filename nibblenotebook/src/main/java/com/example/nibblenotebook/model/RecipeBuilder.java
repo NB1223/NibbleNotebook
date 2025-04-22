@@ -10,6 +10,7 @@ public class RecipeBuilder {
     private String description;
     private String cuisine;
     private double time;
+    private boolean vegetarian;
     private List<RecipeStep> steps = new ArrayList<>();
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
@@ -44,6 +45,11 @@ public class RecipeBuilder {
         this.time = time;
         return this;
     }
+    
+    public RecipeBuilder vegetarian(boolean vegetarian) {
+        this.vegetarian = vegetarian;
+        return this;
+    }
 
     public RecipeBuilder steps(List<RecipeStep> steps) {
         this.steps = steps;
@@ -73,6 +79,7 @@ public class RecipeBuilder {
         recipe.setDescription(this.description);
         recipe.setCuisine(this.cuisine);
         recipe.setTime(this.time);
+        recipe.setVegetarian(this.vegetarian);
         recipe.setSteps(this.steps);
         recipe.setIngredients(this.ingredients);
         return recipe;

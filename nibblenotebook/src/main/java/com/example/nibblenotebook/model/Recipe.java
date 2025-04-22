@@ -20,6 +20,9 @@ public class Recipe {
     private String description;
     private String cuisine;
     private double time;
+    
+    @Column(nullable = false)
+    private boolean vegetarian = false;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<RecipeStep> steps;
@@ -52,6 +55,9 @@ public class Recipe {
 
     public double getTime() { return time; }
     public void setTime(double time) { this.time = time; }
+    
+    public boolean isVegetarian() { return vegetarian; }
+    public void setVegetarian(boolean vegetarian) { this.vegetarian = vegetarian; }
 
     public List<RecipeStep> getSteps() { return steps; }
     public void setSteps(List<RecipeStep> steps) { this.steps = steps; }

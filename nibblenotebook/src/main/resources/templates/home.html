@@ -146,6 +146,55 @@
             background-color: rgb(43, 177, 235);
         }
 
+        .features-section {
+            margin-bottom: 30px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 24px;
+        }
+
+        .feature-content {
+            padding: 20px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .feature-description {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
         @media (max-width: 768px) {
             body {
                 grid-template-columns: 1fr;
@@ -168,8 +217,9 @@
             <a th:href="@{/search}" class="nav-link">Search Recipes</a>
             <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
             <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
             <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
-            <a th:href="@{/recipes/add-recipe}" class="nav-link">+ Add Recipe</a>
         </div>
         
         <a th:href="@{/logout}" class="logout-btn">Logout</a>
@@ -180,7 +230,64 @@
         <div class="user-info">
             <div class="user-text">
                 <h2>Welcome, <span th:text="${name}">User</span>!</h2>
-                <p>Browse all recipes below or use the sidebar to navigate</p>
+                <p>Manage your recipes, meals and meal plans</p>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="features-section">
+            <h1>Features</h1>
+            
+            <div class="features-grid">
+                <a th:href="@{/recipes/my-recipes}" class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">My Recipes</h3>
+                        <p class="feature-description">
+                            Create and manage your personal recipe collection.
+                        </p>
+                    </div>
+                </a>
+                
+                <a th:href="@{/my-meals}" class="feature-card">
+                    <div class="feature-icon">🍽️</div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">My Meals</h3>
+                        <p class="feature-description">
+                            Combine recipes into meals for easier planning.
+                        </p>
+                    </div>
+                </a>
+                
+                <a th:href="@{/meal-plan}" class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">Meal Plan</h3>
+                        <p class="feature-description">
+                            Plan your meals for the entire week.
+                        </p>
+                    </div>
+                </a>
+                
+                <a th:href="@{/shopping-list}" class="feature-card">
+                    <div class="feature-icon">🛒</div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">Shopping List</h3>
+                        <p class="feature-description">
+                            Generate a shopping list based on your meal plan.
+                        </p>
+                    </div>
+                </a>
+                
+                <a th:href="@{/my-pantry}" class="feature-card">
+                    <div class="feature-icon">🧊</div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">My Pantry</h3>
+                        <p class="feature-description">
+                            Track ingredients you already have at home.
+                        </p>
+                    </div>
+                </a>
             </div>
         </div>
         
