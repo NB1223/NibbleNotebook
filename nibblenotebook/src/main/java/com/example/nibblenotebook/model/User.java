@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Entity
-@Table(name = "users") // Change from "User" to "users" to avoid SQL reserved keyword
+@Table(name = "user") // Change from "User" to "users" to avoid SQL reserved keyword
 public class User {
 
     @Id
