@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS Recipe (
     description TEXT,
     cuisine VARCHAR(100),
     time DOUBLE,
+    vegetarian BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
@@ -145,15 +146,15 @@ INSERT INTO User (user_name, password, name) VALUES
 ('food_explorer', 'hashed_password_4', 'Sarah Lee'),
 ('weekend_cook', 'hashed_password_5', 'Michael Brown');
 
-INSERT INTO Recipe (user_id, name, description, cuisine, time) VALUES
-(1, 'Classic Pancakes', 'Fluffy homemade pancakes perfect for weekend breakfast', 'American', 30),
-(2, 'Chocolate Chip Cookies', 'Chewy cookies with melty chocolate chips', 'American', 45),
-(3, 'Grilled Chicken Salad', 'Healthy salad with grilled chicken and fresh veggies', 'Mediterranean', 25),
-(4, 'Spaghetti Bolognese', 'Classic Italian pasta dish with rich meat sauce', 'Italian', 60),
-(1, 'Vegetable Stir Fry', 'Quick and healthy vegetable stir fry with rice', 'Asian', 20),
-(5, 'Mashed Potatoes', 'Creamy homemade mashed potatoes', 'American', 40),
-(2, 'Banana Bread', 'Moist and delicious banana bread', 'American', 75),
-(3, 'Greek Salad', 'Fresh salad with feta cheese and olives', 'Greek', 15);
+INSERT INTO Recipe (user_id, name, description, cuisine, time, vegetarian) VALUES
+(1, 'Classic Pancakes', 'Fluffy homemade pancakes perfect for weekend breakfast', 'American', 30, FALSE),
+(2, 'Chocolate Chip Cookies', 'Chewy cookies with melty chocolate chips', 'American', 45, TRUE),
+(3, 'Grilled Chicken Salad', 'Healthy salad with grilled chicken and fresh veggies', 'Mediterranean', 25, FALSE),
+(4, 'Spaghetti Bolognese', 'Classic Italian pasta dish with rich meat sauce', 'Italian', 60, FALSE),
+(1, 'Vegetable Stir Fry', 'Quick and healthy vegetable stir fry with rice', 'Asian', 20, TRUE),
+(5, 'Mashed Potatoes', 'Creamy homemade mashed potatoes', 'American', 40, TRUE),
+(2, 'Banana Bread', 'Moist and delicious banana bread', 'American', 75, TRUE),
+(3, 'Greek Salad', 'Fresh salad with feta cheese and olives', 'Greek', 15, TRUE);
 
 INSERT INTO Recipe_Ingredients (recipe_id, ingredient_id, quantity) VALUES
 -- Pancakes

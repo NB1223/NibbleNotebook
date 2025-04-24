@@ -10,6 +10,8 @@ import com.example.nibblenotebook.repository.RecipeIngredientRepository;
 import com.example.nibblenotebook.repository.RecipeRepository;
 import com.example.nibblenotebook.repository.RecipeStepRepository;
 import com.example.nibblenotebook.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,7 +46,7 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        User user = userRepo.findById(userId).orElse(null);
+        User user = userRepo.findById(userId);
         List<Recipe> recipes = recipeRepo.findByUser(user);
 
         model.addAttribute("recipes", recipes);
@@ -69,7 +71,7 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        User user = userRepo.findById(userId).orElse(null);
+        User user = userRepo.findById(userId);
         if (user == null) return "redirect:/login";
 
         Recipe newRecipe = Recipe.builder()
@@ -95,7 +97,7 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
+        Recipe recipe = recipeRepo.findById(recipeId);
         if (recipe == null || recipe.getUser().getId() != userId) {
             return "redirect:/recipes/my-recipes";
         }
@@ -116,8 +118,15 @@ public class RecipeController {
     public String addIngredientToRecipe(@PathVariable int recipeId,
                                         @RequestParam int ingredientId,
                                         @RequestParam double quantity) {
-        Recipe recipe = recipeRepo.findById(recipeId).orElseThrow();
-        Ingredient ingredient = ingredientRepo.findById(ingredientId).orElseThrow();
+        Recipe recipe = recipeRepo.findById(recipeId);
+        if (recipe == null) {
+            throw new EntityNotFoundException("Recipe not found with id: " + recipeId);
+        }
+
+        Ingredient ingredient = ingredientRepo.findById(ingredientId);
+        if (ingredient == null) {
+            throw new EntityNotFoundException("Ingredient not found with id: " + ingredientId);
+        }
     
         // Check if relationship already exists
         RecipeIngredient existing = recipe.getIngredients().stream()
@@ -147,7 +156,7 @@ public class RecipeController {
         if (userId == null) return "redirect:/login";
         
         // Verify the recipe belongs to the user
-        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
+        Recipe recipe = recipeRepo.findById(recipeId);
         if (recipe == null || recipe.getUser().getId() != userId) {
             return "redirect:/recipes/my-recipes";
         }
@@ -163,12 +172,12 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
+        Recipe recipe = recipeRepo.findById(recipeId);
         if (recipe == null || recipe.getUser().getId() != userId) {
             return "redirect:/recipes/my-recipes";
         }
 
-        List<RecipeStep> steps = recipeStepRepo.findByRecipeId(recipeId);
+        List<RecipeStep> steps = recipeStepRepo.findByRecipe(recipe);
         steps.sort(Comparator.comparingInt(RecipeStep::getStepNumber));
 
         model.addAttribute("recipe", recipe);
@@ -185,13 +194,13 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
+        Recipe recipe = recipeRepo.findById(recipeId);
         if (recipe == null || recipe.getUser().getId() != userId) {
             return "redirect:/recipes/my-recipes";
         }
 
         // Get current steps to determine next step number
-        List<RecipeStep> currentSteps = recipeStepRepo.findByRecipeId(recipeId);
+        List<RecipeStep> currentSteps = recipeStepRepo.findByRecipe(recipe);
         int nextStepNumber = currentSteps.isEmpty() ? 1 : 
                             currentSteps.stream()
                                 .mapToInt(RecipeStep::getStepNumber)
@@ -210,7 +219,7 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
+        Recipe recipe = recipeRepo.findById(recipeId);
         if (recipe == null || recipe.getUser().getId() != userId) {
             return "redirect:/recipes/my-recipes";
         }
@@ -218,7 +227,7 @@ public class RecipeController {
         recipeStepRepo.deleteById(stepId);
         
         // Re-number remaining steps
-        List<RecipeStep> remainingSteps = recipeStepRepo.findByRecipeId(recipeId);
+        List<RecipeStep> remainingSteps = recipeStepRepo.findByRecipe(recipe);
         remainingSteps.sort(Comparator.comparingInt(RecipeStep::getStepNumber));
         
         for (int i = 0; i < remainingSteps.size(); i++) {
@@ -256,13 +265,13 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        Recipe recipe = recipeRepo.findById(recipeId).orElse(null);
-        if (recipe == null || recipe.getUser().getId() != userId) {
+        Recipe recipe = recipeRepo.findById(recipeId);
+        if (recipe == null) {
             return "redirect:/recipes/my-recipes";
         }
 
         List<RecipeIngredient> ingredients = recipeIngredientRepo.findByRecipe(recipe);
-        List<RecipeStep> steps = recipeStepRepo.findByRecipeId(recipeId);
+        List<RecipeStep> steps = recipeStepRepo.findByRecipe(recipe);
         steps.sort(Comparator.comparingInt(RecipeStep::getStepNumber));
 
         model.addAttribute("recipe", recipe);

@@ -29,11 +29,6 @@ public class MealController {
     @Autowired
     private UserRepository userRepository;
     
-    @Autowired
-    private RecipeManager recipeManager;
-    
-    @Autowired
-    private UserManager userManager;
     
     // View all meals page
     @GetMapping("/my-meals")
@@ -41,7 +36,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return "redirect:/login";
         
         List<Meal> meals = mealRepository.findByUser(user);
@@ -58,7 +53,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return "redirect:/login";
         
         List<Recipe> userRecipes = recipeRepository.findByUser(user);
@@ -80,7 +75,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return "redirect:/login";
         
         Meal meal = Meal.builder()
@@ -91,7 +86,10 @@ public class MealController {
         
         if (recipeIds != null && !recipeIds.isEmpty()) {
             for (Integer recipeId : recipeIds) {
-                recipeRepository.findById(recipeId).ifPresent(meal::addRecipe);
+                Recipe recipe = recipeRepository.findById(recipeId);
+                if (recipe != null) {
+                    meal.addRecipe(recipe);
+                }
             }
         }
         
@@ -106,7 +104,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return "redirect:/login";
         
         try {
@@ -156,7 +154,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return "redirect:/login";
         
         try {
@@ -246,7 +244,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         Meal meal = mealRepository.findById(mealId).orElse(null);
         
         if (meal != null && meal.getUser().getId() == userId) {
@@ -262,7 +260,7 @@ public class MealController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return "redirect:/login";
         
         List<ShoppingListItem> shoppingList = new ArrayList<>();

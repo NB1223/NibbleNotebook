@@ -34,7 +34,7 @@ public class TestController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return List.of();
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return List.of();
         
         return mealPlanRepository.findByUser(user);
@@ -45,7 +45,7 @@ public class TestController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return List.of();
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return List.of();
         
         List<User.ShoppingListItem> shoppingList = user.generateShoppingList();
@@ -64,7 +64,7 @@ public class TestController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return List.of();
         
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId);
         if (user == null) return List.of();
         
         List<UserIngredient> pantry = userIngredientRepository.findByUser(user);

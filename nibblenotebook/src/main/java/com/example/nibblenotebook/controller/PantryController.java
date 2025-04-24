@@ -2,6 +2,8 @@ package com.example.nibblenotebook.controller;
 
 import com.example.nibblenotebook.model.*;
 import com.example.nibblenotebook.repository.*;
+
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +29,7 @@ public class PantryController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        User user = userRepo.findById(userId).orElse(null);
+        User user = userRepo.findById(userId);
         List<UserIngredient> pantry = userIngredientRepo.findByUser(user);
         List<Ingredient> allIngredients = ingredientRepo.findAll();
 
@@ -45,8 +47,11 @@ public class PantryController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        User user = userRepo.findById(userId).orElse(null);
-        Ingredient ingredient = ingredientRepo.findById(ingredientId).orElse(null);
+        User user = userRepo.findById(userId);
+        Ingredient ingredient = ingredientRepo.findById(ingredientId);
+        if (ingredient == null) {
+            throw new EntityNotFoundException("Ingredient not found with id: " + ingredientId);
+        }
 
         if (user != null && ingredient != null) {
             UserIngredient existing = userIngredientRepo.findByUserAndIngredient_Id(user, ingredientId).orElse(null);
