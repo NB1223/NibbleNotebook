@@ -1,63 +1,215 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${recipe.name} + ' - Recipe Details'">Recipe Details</title>
+    <title th:text="${recipe.name} + ' - Nibble Notebook'">Recipe Details</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-            background-color: #f9fafb;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
         }
-        h1, h2 {
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+            max-width: 900px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .sidebar h2 {
+            color: white
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .recipe-meta p {
+            margin: 0;
+            color: #555;
+        }
+
+        .recipe-meta strong {
             color: #2c3e50;
         }
-        .section {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+
+        .recipe-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
+
         .ingredients ul, .steps ol {
-            margin-left: 20px;
+            margin: 0;
+            padding-left: 20px;
         }
+
         .ingredients li, .steps li {
-            padding: 5px 0;
-            font-size: 16px;
+            padding: 8px 0;
             color: #444;
+            line-height: 1.5;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: rgb(43, 177, 235);
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: rgb(31, 145, 194);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1 th:text="${recipe.name}">Recipe Name</h1>
-    <p><strong>Cuisine:</strong> <span th:text="${recipe.cuisine}">Cuisine</span></p>
-    <p><strong>Time:</strong> <span th:text="${recipe.time} + ' mins'">Time</span></p>
-    <p><strong>Description:</strong></p>
-    <p th:text="${recipe.description}">Recipe description here...</p>
-
-    <div class="section ingredients">
-        <h2>Ingredients</h2>
-        <ul>
-            <li th:each="ri : ${ingredients}"
-            th:text="${ri.ingredient.name + ' - ' + ri.quantity + ' ' + ri.ingredient.measurementUnit}">
-            Ingredient - Quantity Unit
-            </li>        
-        </ul>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">Add New Recipe</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+        </div>
+        
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
     </div>
 
-    <div class="section steps">
-        <h2>Steps</h2>
-        <ol>
-            <li th:each="step : ${steps}" th:text="${step.instruction}">
-                Step instruction here...
-            </li>
-        </ol>
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 th:text="${recipe.name}">Recipe Name</h1>
+        
+        <div class="recipe-meta">
+            <p><strong>Cuisine:</strong> <span th:text="${recipe.cuisine}">Cuisine</span></p>
+            <p><strong>Time:</strong> <span th:text="${recipe.time} + ' mins'">Time</span></p>
+            <p th:if="${recipe.vegetarian}"><strong>Vegetarian:</strong> Yes</p>
+        </div>
+        
+        <div class="section">
+            <h2>Description</h2>
+            <p class="recipe-description" th:text="${recipe.description}">Recipe description here...</p>
+        </div>
+
+        <div class="section ingredients">
+            <h2>Ingredients</h2>
+            <ul>
+                <li th:each="ri : ${ingredients}"
+                    th:text="${ri.ingredient.name + ' - ' + ri.quantity + ' ' + ri.ingredient.measurementUnit}">
+                    Ingredient - Quantity Unit
+                </li>
+                <li th:if="${#lists.isEmpty(ingredients)}" style="font-style: italic; color: #7f8c8d;">
+                    No ingredients listed for this recipe
+                </li>
+            </ul>
+        </div>
+
+        <div class="section steps">
+            <h2>Steps</h2>
+            <ol>
+                <li th:each="step : ${steps}" th:text="${step.instruction}">
+                    Step instruction here...
+                </li>
+                <li th:if="${#lists.isEmpty(steps)}" style="font-style: italic; color: #7f8c8d;">
+                    No steps listed for this recipe
+                </li>
+            </ol>
+        </div>
+
     </div>
-
-    <a th:href="@{/recipes/home}">← Back to Home</a>
-
 </body>
 </html>

@@ -1,125 +1,238 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Add Recipe</title>
+    <title>Add Recipe - Nibble Notebook</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f8;
-            padding: 40px;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
         }
 
-        h2 {
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
             text-align: center;
-            color: #333;
         }
 
-        form {
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 25px 30px;
+        .sidebar h2 {
+            color: white;
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .recipe-form {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            margin-top: 16px;
-            font-weight: bold;
+            color: #555;
+            font-weight: 600;
         }
 
         input[type="text"],
         input[type="number"],
-        textarea {
+        textarea,
+        select {
             width: 100%;
-            padding: 10px;
-            margin-top: 4px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
             box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: rgb(43, 177, 235);
         }
 
         textarea {
             resize: vertical;
+            min-height: 120px;
         }
-        
+
         .checkbox-container {
             display: flex;
             align-items: center;
-            margin-top: 16px;
+            margin-bottom: 20px;
         }
-        
+
         .checkbox-container input[type="checkbox"] {
             margin-right: 10px;
-            transform: scale(1.2);
+            width: 18px;
+            height: 18px;
+            accent-color: rgb(43, 177, 235);
         }
-        
+
         .checkbox-container label {
             margin: 0;
             font-weight: normal;
+            color: #555;
         }
 
         button {
-            margin-top: 20px;
             width: 100%;
             padding: 12px;
-            background-color:rgb(43, 177, 235);
+            background-color: rgb(43, 177, 235);
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: rgb(31, 145, 194);
         }
 
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
+        .back-link {
+            display: inline-block;
+            color: rgb(43, 177, 235);
             text-decoration: none;
-            color:rgb(43, 177, 235);
-            font-weight: bold;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: color 0.3s ease;
         }
 
-        a:hover {
+        .back-link:hover {
+            color: rgb(31, 145, 194);
             text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .recipe-form {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-<h2>Add a New Recipe</h2>
-
-<form th:action="@{/recipes/add-recipe}" th:object="${recipe}" method="post">
-
-    <label for="name">Name:</label>
-    <input type="text" th:field="*{name}" required />
-
-    <label for="description">Description:</label>
-    <textarea th:field="*{description}" rows="4" required></textarea>
-
-    <label for="cuisine">Cuisine:</label>
-    <input type="text" th:field="*{cuisine}" required />
-
-    <label for="time">Time (in minutes):</label>
-    <input type="number" step="1" min="1" th:field="*{time}" required />
-    
-    <div class="checkbox-container">
-        <input type="checkbox" th:field="*{vegetarian}" id="vegetarian" />
-        <label for="vegetarian">Vegetarian</label>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link active">Add New Recipe</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
+        </div>
+        
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
     </div>
 
-    <button type="submit">Add Recipe</button>
-</form>
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Add a New Recipe</h1>
+        
+        <form class="recipe-form" th:action="@{/recipes/add-recipe}" th:object="${recipe}" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" th:field="*{name}" required />
 
-<a href="/recipes/home">← Back to Home</a>
+            <label for="description">Description:</label>
+            <textarea id="description" th:field="*{description}" required></textarea>
 
+            <label for="cuisine">Cuisine:</label>
+            <input type="text" id="cuisine" th:field="*{cuisine}" required />
+
+            <label for="time">Time (minutes):</label>
+            <input type="number" id="time" step="1" min="1" th:field="*{time}" required />
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="vegetarian" th:field="*{vegetarian}" />
+                <label for="vegetarian">Vegetarian</label>
+            </div>
+
+            <button type="submit">Add Recipe</button>
+        </form>
+        
+    </div>
 </body>
 </html>

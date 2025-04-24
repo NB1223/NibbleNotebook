@@ -216,6 +216,7 @@
             <a th:href="@{/recipes/home}" class="nav-link active">Home</a>
             <a th:href="@{/search}" class="nav-link">Search Recipes</a>
             <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">Add New Recipe</a>
             <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
             <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
             <a th:href="@{/shopping-list}" class="nav-link">Shopping List</a>
@@ -231,63 +232,6 @@
             <div class="user-text">
                 <h2>Welcome, <span th:text="${name}">User</span>!</h2>
                 <p>Manage your recipes, meals and meal plans</p>
-            </div>
-        </div>
-        
-        <!-- Features Section -->
-        <div class="features-section">
-            <h1>Features</h1>
-            
-            <div class="features-grid">
-                <a th:href="@{/recipes/my-recipes}" class="feature-card">
-                    <div class="feature-icon">📝</div>
-                    <div class="feature-content">
-                        <h3 class="feature-title">My Recipes</h3>
-                        <p class="feature-description">
-                            Create and manage your personal recipe collection.
-                        </p>
-                    </div>
-                </a>
-                
-                <a th:href="@{/my-meals}" class="feature-card">
-                    <div class="feature-icon">🍽️</div>
-                    <div class="feature-content">
-                        <h3 class="feature-title">My Meals</h3>
-                        <p class="feature-description">
-                            Combine recipes into meals for easier planning.
-                        </p>
-                    </div>
-                </a>
-                
-                <a th:href="@{/meal-plan}" class="feature-card">
-                    <div class="feature-icon">📅</div>
-                    <div class="feature-content">
-                        <h3 class="feature-title">Meal Plan</h3>
-                        <p class="feature-description">
-                            Plan your meals for the entire week.
-                        </p>
-                    </div>
-                </a>
-                
-                <a th:href="@{/shopping-list}" class="feature-card">
-                    <div class="feature-icon">🛒</div>
-                    <div class="feature-content">
-                        <h3 class="feature-title">Shopping List</h3>
-                        <p class="feature-description">
-                            Generate a shopping list based on your meal plan.
-                        </p>
-                    </div>
-                </a>
-                
-                <a th:href="@{/my-pantry}" class="feature-card">
-                    <div class="feature-icon">🧊</div>
-                    <div class="feature-content">
-                        <h3 class="feature-title">My Pantry</h3>
-                        <p class="feature-description">
-                            Track ingredients you already have at home.
-                        </p>
-                    </div>
-                </a>
             </div>
         </div>
         
