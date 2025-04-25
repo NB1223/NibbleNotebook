@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Pantry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .pantry-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .pantry-item:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .action-form {
+            display: inline;
+        }
+        .add-new-form {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .add-existing-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        .add-existing-form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Pantry</h1>
+    <a th:href="@{/recipes/home}">Back to Home</a>
+    
+    <div th:if="${pantryItems.empty}">
+        <p>Your pantry is empty. Add some ingredients to get started!</p>
+    </div>
+    
+    <div th:unless="${pantryItems.empty}">
+        <h2>Your Ingredients</h2>
+        <div th:each="item : ${pantryItems}">
+            <div class="pantry-item">
+                <span th:text="${item.ingredient.name} + ' - ' + ${item.quantity} + ' ' + ${item.ingredient.measurementUnit}"></span>
+                <div>
+                    <form class="action-form" th:action="@{/my-pantry/update}" method="post">
+                        <input type="hidden" name="ingredientId" th:value="${item.ingredient.id}">
+                        <input type="number" name="newQuantity" th:value="${item.quantity}" step="0.01" min="0">
+                        <button type="submit">Update</button>
+                    </form>
+                    <form class="action-form" th:action="@{/my-pantry/remove}" method="post">
+                        <input type="hidden" name="ingredientId" th:value="${item.ingredient.id}">
+                        <button type="submit">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Add this section ABOVE the "Add New Ingredient" form -->
+    <div class="add-existing-form">
+        <h3>Add Existing Ingredient</h3>
+        <form th:action="@{/my-pantry/add-existing}" method="post">
+            <div>
+                <label>Select Ingredient:</label>
+                <select name="ingredientId" required>
+                    <option value="">-- Select Ingredient --</option>
+                    <option th:each="ingredient : ${allIngredients}"
+                            th:value="${ingredient.id}"
+                            th:text="${ingredient.name} + ' (' + ${ingredient.measurementUnit} + ')'">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label>Quantity:</label>
+                <input type="number" name="quantity" step="0.01" min="0" required>
+            </div>
+            <button type="submit">Add to Pantry</button>
+        </form>
+    </div>
+
+<!-- Keep your existing "Add New Ingredient" form as is -->
+    
+    <div class="add-new-form">
+        <h2>Add New Ingredient</h2>
+        <form th:action="@{/my-pantry/add-new}" method="post">
+            <div>
+                <label>Name:</label>
+                <input type="text" th:field="${newIngredient.name}" required>
+            </div>
+            <div>
+                <label>Measurement Unit:</label>
+                <input type="text" th:field="${newIngredient.measurementUnit}" required>
+            </div>
+            <div>
+                <label>Quantity:</label>
+                <input type="number" name="quantity" step="0.01" min="0" required>
+            </div>
+            <button type="submit">Add to Pantry</button>
+        </form>
+    </div>
+</body>
+</html>

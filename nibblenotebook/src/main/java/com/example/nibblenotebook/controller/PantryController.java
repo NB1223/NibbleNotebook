@@ -1,9 +1,9 @@
 package com.example.nibblenotebook.controller;
 
-import com.example.nibblenotebook.model.*;
-import com.example.nibblenotebook.repository.*;
-
-import jakarta.persistence.EntityNotFoundException;
+import com.example.nibblenotebook.model.Ingredient;
+import com.example.nibblenotebook.model.User;
+import com.example.nibblenotebook.model.UserIngredient;
+import com.example.nibblenotebook.service.PantryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,62 +13,100 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@RequestMapping("/my-pantry")
 public class PantryController {
 
     @Autowired
-    private UserRepository userRepo;
+    private PantryService pantryService;
 
-    @Autowired
-    private IngredientRepository ingredientRepo;
-
-    @Autowired
-    private UserIngredientRepository userIngredientRepo;
-
-    @GetMapping("/my-pantry")
-    public String showPantry(HttpSession session, Model model) {
+    @GetMapping
+    public String viewPantry(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null) return "redirect:/login";
-
-        User user = userRepo.findById(userId);
-        List<UserIngredient> pantry = userIngredientRepo.findByUser(user);
-        List<Ingredient> allIngredients = ingredientRepo.findAll();
-
-        model.addAttribute("pantry", pantry);
-        model.addAttribute("allIngredients", allIngredients);
-        model.addAttribute("userIngredient", new UserIngredient());
-
-        return "my-pantry";
+        if (userId == null) {
+            return "redirect:/login";
+        }
+    
+        User user = new User();
+        user.setId(userId);
+        
+        // Existing code
+        List<UserIngredient> pantryItems = pantryService.getUserPantry(user);
+        model.addAttribute("pantryItems", pantryItems);
+        model.addAttribute("newIngredient", new Ingredient());
+        
+        // New code - just add this line
+        model.addAttribute("allIngredients", pantryService.getAllIngredients());
+        
+        return "pantry";
     }
 
-    @PostMapping("/my-pantry/add")
-    public String addIngredient(HttpSession session,
-                                @RequestParam int ingredientId,
-                                @RequestParam double quantity) {
+    @PostMapping("/add-existing")
+    public String addExistingIngredient(@RequestParam int ingredientId, 
+                                      @RequestParam double quantity,
+                                      HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null) return "redirect:/login";
-
-        User user = userRepo.findById(userId);
-        Ingredient ingredient = ingredientRepo.findById(ingredientId);
-        if (ingredient == null) {
-            throw new EntityNotFoundException("Ingredient not found with id: " + ingredientId);
+        if (userId == null) {
+            return "redirect:/login";
         }
 
-        if (user != null && ingredient != null) {
-            UserIngredient existing = userIngredientRepo.findByUserAndIngredient_Id(user, ingredientId).orElse(null);
-            if (existing != null) {
-                existing.setQuantity(quantity);
-                userIngredientRepo.save(existing);
-            } else {
-                userIngredientRepo.save(new UserIngredient(user, ingredient, quantity));
-            }
-        }
-
+        User user = new User();
+        user.setId(userId);
+        
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(ingredientId);
+        
+        pantryService.addIngredientToPantry(user, ingredient, quantity);
         return "redirect:/my-pantry";
     }
 
-    @PostMapping("/my-pantry/delete")
-    public String deleteIngredient(@RequestParam int userIngredientId) {
-        userIngredientRepo.deleteById(userIngredientId);
+    @PostMapping("/add-new")
+    public String addNewIngredient(@ModelAttribute Ingredient newIngredient,
+                                 @RequestParam double quantity,
+                                 HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        User user = new User();
+        user.setId(userId);
+        
+        Ingredient createdIngredient = pantryService.createNewIngredient(
+            newIngredient.getName(), 
+            newIngredient.getMeasurementUnit());
+        
+        pantryService.addIngredientToPantry(user, createdIngredient, quantity);
+        return "redirect:/my-pantry";
+    }
+
+    @PostMapping("/update")
+    public String updateQuantity(@RequestParam int ingredientId,
+                               @RequestParam double newQuantity,
+                               HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        User user = new User();
+        user.setId(userId);
+        
+        pantryService.updateIngredientQuantity(user, ingredientId, newQuantity);
+        return "redirect:/my-pantry";
+    }
+
+    @PostMapping("/remove")
+    public String removeIngredient(@RequestParam int ingredientId,
+                                 HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        User user = new User();
+        user.setId(userId);
+        
+        pantryService.removeIngredientFromPantry(user, ingredientId);
         return "redirect:/my-pantry";
     }
 }
