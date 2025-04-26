@@ -1,6 +1,7 @@
 package com.example.nibblenotebook.controller;
 
 import com.example.nibblenotebook.model.*;
+import com.example.nibblenotebook.service.PantryService;
 import com.example.nibblenotebook.service.ShoppingListContext;
 
 import jakarta.persistence.EntityManager;
@@ -63,13 +64,16 @@ public class ShoppingListController {
         ShoppingList shoppingList = shoppingListContext.createManualList(user, listName);
         return "redirect:/shopping-lists/" + shoppingList.getListId();
     }
-
+    
     @GetMapping("/{id}")
     public String viewShoppingList(@PathVariable int id,
                                  HttpSession session,
                                  Model model) {
         User user = getAuthenticatedUser(session);
-        ShoppingList shoppingList = shoppingListContext.getShoppingList(id, user.getId());
+        
+        // Always regenerate the list when viewed
+        ShoppingList shoppingList = shoppingListContext.regenerateList(id, user.getId());
+        
         model.addAttribute("shoppingList", shoppingList);
         model.addAttribute("allIngredients", shoppingListContext.getAllIngredients());
         return "shopping-list";
@@ -127,4 +131,45 @@ public class ShoppingListController {
     
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private PantryService pantryService;
+
+    // Add to your controller
+    @GetMapping("/pantry")
+    public String viewPantry(HttpSession session, Model model) {
+        User user = getAuthenticatedUser(session);
+        model.addAttribute("pantryItems", pantryService.getUserPantry(user));
+        model.addAttribute("allIngredients", shoppingListContext.getAllIngredients());
+        return "pantry";
+    }
+
+    @PostMapping("/pantry/add")
+    public String addToPantry(@RequestParam int ingredientId,
+                             @RequestParam double quantity,
+                             HttpSession session) {
+        User user = getAuthenticatedUser(session);
+        Ingredient ingredient = entityManager.find(Ingredient.class, ingredientId);
+        pantryService.addToPantry(user, ingredient, quantity);
+        return "redirect:/pantry";
+    }
+    
+    @PostMapping("/pantry/remove")
+    public String removeFromPantry(@RequestParam int ingredientId,
+                                 HttpSession session) {
+        User user = getAuthenticatedUser(session);
+        pantryService.removeFromPantry(user, ingredientId);
+        return "redirect:/pantry";
+    }
+    
+    @PostMapping("/pantry/update")
+    public String updateQuantity(@RequestParam int ingredientId,
+                               @RequestParam double newQuantity,
+                               HttpSession session) {
+        User user = getAuthenticatedUser(session);
+        pantryService.updateQuantity(user, ingredientId, newQuantity);
+        return "redirect:/pantry";
+    }
+
+    
 }

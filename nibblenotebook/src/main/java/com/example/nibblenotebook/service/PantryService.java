@@ -4,12 +4,17 @@ import com.example.nibblenotebook.model.Ingredient;
 import com.example.nibblenotebook.model.User;
 import com.example.nibblenotebook.model.UserIngredient;
 import java.util.List;
+import java.util.Map;
 
 public interface PantryService {
     List<UserIngredient> getUserPantry(User user);
-    UserIngredient addIngredientToPantry(User user, Ingredient ingredient, double quantity);
-    UserIngredient updateIngredientQuantity(User user, int ingredientId, double newQuantity);
-    void removeIngredientFromPantry(User user, int ingredientId);
+    
+    // Unified method names
+    UserIngredient addToPantry(User user, Ingredient ingredient, double quantity);
+    void removeFromPantry(User user, int ingredientId);
+    UserIngredient updateQuantity(User user, int ingredientId, double newQuantity);
+
     Ingredient createNewIngredient(String name, String measurementUnit);
     List<Ingredient> getAllIngredients();
+    Map<Ingredient, Double> getPantryQuantities(User user);
 }

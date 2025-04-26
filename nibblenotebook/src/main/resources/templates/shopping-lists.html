@@ -305,6 +305,12 @@
             </div>
         </div>
     </div>
-
+    <script>
+        // Refresh every 30 seconds and when returning to tab
+        setInterval(() => location.reload(), 30000);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) location.reload();
+        });
+    </script>
 </body>
 </html>

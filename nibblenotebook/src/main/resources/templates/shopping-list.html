@@ -1,58 +1,246 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${shoppingList.name} + ' - Shopping List'"></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title th:text="${shoppingList.name} + ' - Shopping List - Nibble Notebook'"></title>
+    <style>
+        /* (Copy the same full CSS from your shopping list overview page) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .main-content {
+            padding: 30px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .sidebar h2 {
+            color: white;
+        }
+        h1 span {
+            color: rgb(43, 177, 235);
+        }
+        .shopping-lists-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .list-card {
+            background-color: #fff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .list-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+        .list-items {
+            margin-top: 15px;
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .item-name {
+            font-weight: 500;
+        }
+        .item-quantity {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .item-status {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            color: #555;
+        }
+        .item-status.purchased {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            text-decoration: none;
+            color: white;
+            background-color: rgb(43, 177, 235);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: rgb(31, 145, 194);
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+        }
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        .nav-menu {
+            margin-top: 40px;
+        }
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #7f8c8d;
+        }
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 th:text="${shoppingList.name}"></h2>
-            <a th:href="@{/shopping-lists}" class="btn btn-outline-secondary">Back to Lists</a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">Add New Recipe</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Meal Shopping List</a>
+            <a th:href="@{/shopping-lists}" class="nav-link active">My Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link">My Pantry</a>
         </div>
-        
-        <div class="list-group mt-3">
-            <div th:each="item : ${shoppingList.items}" class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <span th:text="${item.ingredient.name} + ' - ' + ${item.quantity} + ' ' + ${item.ingredient.measurementUnit}"></span>
-                    <span th:if="${item.purchased}" class="badge bg-success ms-2">Purchased</span>
-                </div>
-                <div>
-                    <form th:action="@{'/shopping-lists/' + ${shoppingList.listId} + '/items/' + ${item.itemId} + '/toggle'}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-sm" 
-                                th:class="${item.purchased} ? 'btn-outline-secondary' : 'btn-outline-success'">
-                            <span th:text="${item.purchased} ? 'Undo' : 'Mark Purchased'"></span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5>Add Item</h5>
-            </div>
-            <div class="card-body">
-                <form th:action="@{'/shopping-lists/' + ${shoppingList.listId} + '/items'}" method="post">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <select name="ingredientId" class="form-select" required>
-                                <option value="">Select ingredient</option>
-                                <option th:each="ingredient : ${allIngredients}" 
-                                        th:value="${ingredient.id}"
-                                        th:text="${ingredient.name} + ' (' + ${ingredient.measurementUnit} + ')'"></option>
-                            </select>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <h2 th:text="${shoppingList.name}">Shopping List</h2>
+
+        <div class="shopping-lists-container">
+            <div class="list-card">
+                <div class="list-items">
+                    <div class="list-item" th:each="item : ${shoppingList.items}">
+                        <div class="item-info">
+                            <span class="item-name" th:text="${item.ingredient.name}">Ingredient Name</span>
+                            <span class="item-quantity" th:text="${item.quantity} + ' ' + ${item.ingredient.measurementUnit}">Amount</span>
                         </div>
-                        <div class="col-md-4">
-                            <input type="number" name="quantity" class="form-control" placeholder="Quantity" step="0.01" min="0.01" required>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary w-100">Add</button>
+                        <div class="actions">
+                            <form th:action="@{'/shopping-lists/' + ${shoppingList.listId} + '/items/' + ${item.itemId} + '/toggle'}" method="post">
+                                <button type="submit" class="btn btn-success" 
+                                        th:classappend="${item.purchased} ? 'btn-danger' : 'btn-success'"
+                                        th:text="${item.purchased} ? 'Undo' : 'Mark Purchased'"></button>
+                            </form>
                         </div>
                     </div>
+                    <div th:if="${#lists.isEmpty(shoppingList.items)}" class="empty-state">
+                        <p>No items in this list</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Item -->
+            <div class="creation-card">
+                <h3>Add New Item</h3>
+                <form th:action="@{'/shopping-lists/' + ${shoppingList.listId} + '/items'}" method="post">
+                    <select name="ingredientId" class="form-select" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ddd;" required>
+                        <option value="">Select ingredient</option>
+                        <option th:each="ingredient : ${allIngredients}" 
+                                th:value="${ingredient.id}" 
+                                th:text="${ingredient.name} + ' (' + ${ingredient.measurementUnit} + ')'"></option>
+                    </select>
+                    <input type="number" name="quantity" step="0.01" min="0.01" placeholder="Quantity" 
+                           style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ddd;" required>
+                    <button type="submit" class="btn">Add Item</button>
                 </form>
+            </div>
+
+            <!-- Back button -->
+            <div style="margin-top: 20px;">
+                <a th:href="@{/shopping-lists}" class="btn">Back to Lists</a>
             </div>
         </div>
     </div>
+    <script>
+        // Refresh every 30 seconds and when returning to tab
+        setInterval(() => location.reload(), 30000);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) location.reload();
+        });
+    </script>
 </body>
 </html>

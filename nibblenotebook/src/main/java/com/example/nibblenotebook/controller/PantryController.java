@@ -55,7 +55,7 @@ public class PantryController {
         Ingredient ingredient = new Ingredient();
         ingredient.setId(ingredientId);
         
-        pantryService.addIngredientToPantry(user, ingredient, quantity);
+        pantryService.addToPantry(user, ingredient, quantity);
         return "redirect:/my-pantry";
     }
 
@@ -75,7 +75,7 @@ public class PantryController {
             newIngredient.getName(), 
             newIngredient.getMeasurementUnit());
         
-        pantryService.addIngredientToPantry(user, createdIngredient, quantity);
+        pantryService.addToPantry(user, createdIngredient, quantity);
         return "redirect:/my-pantry";
     }
 
@@ -91,7 +91,7 @@ public class PantryController {
         User user = new User();
         user.setId(userId);
         
-        pantryService.updateIngredientQuantity(user, ingredientId, newQuantity);
+        pantryService.updateQuantity(user, ingredientId, newQuantity);
         return "redirect:/my-pantry";
     }
 
@@ -106,7 +106,7 @@ public class PantryController {
         User user = new User();
         user.setId(userId);
         
-        pantryService.removeIngredientFromPantry(user, ingredientId);
+        pantryService.removeFromPantry(user, ingredientId);
         return "redirect:/my-pantry";
     }
 }

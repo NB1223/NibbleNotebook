@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,6 +24,82 @@ public class ShoppingListContext {
                              ManualShoppingListStrategy manualStrategy) {
         this.recipeStrategy = recipeStrategy;
         this.manualStrategy = manualStrategy;
+    }
+
+
+    @Transactional
+    public ShoppingList regenerateList(int listId, int userId) {
+        // 1. Get the existing list
+        ShoppingList list = entityManager.createQuery(
+            "SELECT sl FROM ShoppingList sl WHERE sl.listId = :listId AND sl.user.id = :userId", 
+            ShoppingList.class)
+            .setParameter("listId", listId)
+            .setParameter("userId", userId)
+            .getSingleResult();
+
+        // 2. Only regenerate recipe-based lists
+        if (list.getName().startsWith("For: ")) {
+            String recipeName = list.getName().substring(5);
+            
+            // 3. Get the recipe
+            Recipe recipe = entityManager.createQuery(
+                "SELECT r FROM Recipe r WHERE r.user.id = :userId AND r.name = :name",
+                Recipe.class)
+                .setParameter("userId", userId)
+                .setParameter("name", recipeName)
+                .getSingleResult();
+
+            // 4. Clear existing items (but keep the list)
+            entityManager.createQuery("DELETE FROM ShoppingItem i WHERE i.shoppingList = :list")
+                    .setParameter("list", list)
+                    .executeUpdate();
+
+            // 5. Regenerate items for the same list
+            List<RecipeIngredient> recipeIngredients = entityManager.createQuery(
+                "SELECT ri FROM RecipeIngredient ri WHERE ri.recipe = :recipe", 
+                RecipeIngredient.class)
+                .setParameter("recipe", recipe)
+                .getResultList();
+
+            Map<Ingredient, Double> pantryQuantities = getPantryQuantities(userId);
+
+            for (RecipeIngredient ri : recipeIngredients) {
+                double neededQty = calculateNeededQuantity(ri, pantryQuantities);
+                if (neededQty > 0) {
+                    ShoppingItem item = new ShoppingItem(list, ri.getIngredient(), neededQty);
+                    entityManager.persist(item);
+                }
+            }
+        }
+        
+        // 6. Refresh and return the same list
+        entityManager.refresh(list);
+        return list;
+    }
+
+    private Map<Ingredient, Double> getPantryQuantities(int userId) {
+        List<UserIngredient> pantryItems = entityManager.createQuery(
+            "SELECT ui FROM UserIngredient ui JOIN ui.recipe r " +
+            "WHERE r.user.id = :userId AND r.name LIKE 'User Ingredient:%'",
+            UserIngredient.class)
+            .setParameter("userId", userId)
+            .getResultList();
+        
+        return pantryItems.stream()
+            .collect(Collectors.toMap(
+                UserIngredient::getIngredient,
+                UserIngredient::getQuantity,
+                Double::sum
+            ));
+    }
+
+    private double calculateNeededQuantity(RecipeIngredient recipeIngredient, 
+                                        Map<Ingredient, Double> pantryQuantities) {
+        Double available = pantryQuantities.get(recipeIngredient.getIngredient());
+        if (available != null) {
+            return Math.max(0, recipeIngredient.getQuantity() - available);
+        }
+        return recipeIngredient.getQuantity();
     }
 
     public ShoppingList generateFromRecipe(User user, Recipe recipe) {

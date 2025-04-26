@@ -30,6 +30,12 @@ public class UserIngredient {
         this.quantity = quantity;
     }
     
+    public boolean isPantryItem() {
+        return this.recipe != null && 
+               this.recipe.getName() != null && 
+               this.recipe.getName().startsWith("User Ingredient:");
+    }
+    
     // For compatibility with previous code
     public UserIngredient(User user, Ingredient ingredient, double quantity) {
         // Create a temporary recipe for user's ingredient storage

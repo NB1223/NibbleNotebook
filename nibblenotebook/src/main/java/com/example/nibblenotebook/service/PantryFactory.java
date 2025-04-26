@@ -9,6 +9,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,8 +36,8 @@ public class PantryFactory implements PantryService {
     }
 
     @Override
-    public UserIngredient addIngredientToPantry(User user, Ingredient ingredient, double quantity) {
-        // Check if a pantry recipe already exists for this user
+    public UserIngredient addToPantry(User user, Ingredient ingredient, double quantity) {
+        // Implementation from your existing addIngredientToPantry
         List<Recipe> pantryRecipes = entityManager.createQuery(
             "SELECT r FROM Recipe r WHERE r.user = :user AND r.name = :name", 
             Recipe.class)
@@ -45,7 +47,6 @@ public class PantryFactory implements PantryService {
         
         Recipe pantryRecipe;
         if (pantryRecipes.isEmpty()) {
-            // Create a new recipe for this ingredient
             pantryRecipe = new Recipe();
             pantryRecipe.setUser(user);
             pantryRecipe.setName("User Ingredient: " + ingredient.getName());
@@ -54,14 +55,14 @@ public class PantryFactory implements PantryService {
             pantryRecipe = pantryRecipes.get(0);
         }
         
-        // Create and save the ingredient
         UserIngredient userIngredient = new UserIngredient(pantryRecipe, ingredient, quantity);
         entityManager.persist(userIngredient);
         return userIngredient;
     }
 
     @Override
-    public UserIngredient updateIngredientQuantity(User user, int ingredientId, double newQuantity) {
+    public void removeFromPantry(User user, int ingredientId) {
+        // Implementation from your existing removeIngredientFromPantry
         UserIngredient userIngredient = entityManager.createQuery(
             "SELECT ri FROM UserIngredient ri JOIN ri.recipe r WHERE r.user = :user AND ri.ingredient.id = :ingredientId AND r.name LIKE 'User Ingredient:%'", 
             UserIngredient.class)
@@ -69,24 +70,9 @@ public class PantryFactory implements PantryService {
             .setParameter("ingredientId", ingredientId)
             .getSingleResult();
         
-        userIngredient.setQuantity(newQuantity);
-        return entityManager.merge(userIngredient);
-    }
-
-    @Override
-    public void removeIngredientFromPantry(User user, int ingredientId) {
-        UserIngredient userIngredient = entityManager.createQuery(
-            "SELECT ri FROM UserIngredient ri JOIN ri.recipe r WHERE r.user = :user AND ri.ingredient.id = :ingredientId AND r.name LIKE 'User Ingredient:%'", 
-            UserIngredient.class)
-            .setParameter("user", user)
-            .setParameter("ingredientId", ingredientId)
-            .getSingleResult();
-        
-        // Delete the associated recipe if this is the only ingredient
         Recipe recipe = userIngredient.getRecipe();
         entityManager.remove(userIngredient);
         
-        // Check if this was the only ingredient in the recipe
         long count = entityManager.createQuery(
             "SELECT COUNT(ri) FROM UserIngredient ri WHERE ri.recipe = :recipe", 
             Long.class)
@@ -99,9 +85,37 @@ public class PantryFactory implements PantryService {
     }
 
     @Override
+    public UserIngredient updateQuantity(User user, int ingredientId, double newQuantity) {
+        // Implementation from your existing updateIngredientQuantity
+        UserIngredient userIngredient = entityManager.createQuery(
+            "SELECT ri FROM UserIngredient ri JOIN ri.recipe r WHERE r.user = :user AND ri.ingredient.id = :ingredientId AND r.name LIKE 'User Ingredient:%'", 
+            UserIngredient.class)
+            .setParameter("user", user)
+            .setParameter("ingredientId", ingredientId)
+            .getSingleResult();
+        
+        userIngredient.setQuantity(newQuantity);
+        return entityManager.merge(userIngredient);
+    }
+
+
+
+    @Override
     public Ingredient createNewIngredient(String name, String measurementUnit) {
         Ingredient ingredient = new Ingredient(name, measurementUnit);
         entityManager.persist(ingredient);
         return ingredient;
     }
+
+    public Map<Ingredient, Double> getPantryQuantities(User user) {
+        List<UserIngredient> pantryItems = getUserPantry(user);
+        return pantryItems.stream()
+            .collect(Collectors.toMap(
+                UserIngredient::getIngredient,
+                UserIngredient::getQuantity,
+                (q1, q2) -> q1 + q2 // Merge quantities if same ingredient appears multiple times
+            ));
+    }
+
+    
 }
