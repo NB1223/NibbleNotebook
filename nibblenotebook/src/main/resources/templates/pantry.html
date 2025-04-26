@@ -1,198 +1,261 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>My Pantry</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>My Pantry - Nibble Notebook</title>
     <style>
         body {
-            background-color: #f5f7fa;
-            padding: 20px;
-        }
-        .pantry-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            padding: 25px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .pantry-grid {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
             margin-bottom: 20px;
         }
-        .ingredient-list {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 10px;
+
+        .sidebar h2 {
+            color: white;
         }
-        .pantry-item {
+
+        h1 span {
+            color: rgb(43, 177, 235);
+        }
+
+        .pantry-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .ingredient-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .ingredient-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            background: #f8fafc;
-            border-radius: 8px;
-            border-left: 3px solid #3b82f6;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
         }
-        .item-actions {
+
+        .ingredient-info {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
-        .form-container {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 20px;
-            height: 100%;
+
+        .ingredient-name {
+            font-weight: bold;
         }
-        .form-tabs {
+
+        .ingredient-quantity {
+            color: #7f8c8d;
+        }
+
+        .ingredient-actions {
             display: flex;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 15px;
+            gap: 10px;
         }
-        .form-tab {
-            padding: 8px 16px;
+
+        .btn {
+            text-decoration: none;
+            color: white;
+            background-color: rgb(43, 177, 235);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            border: none;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
         }
-        .form-tab.active {
-            border-bottom: 2px solid #3b82f6;
-            color: #3b82f6;
-            font-weight: 500;
+
+        .btn:hover {
+            background-color: rgb(31, 145, 194);
         }
-        .form-content {
-            display: none;
+
+        .btn-danger {
+            background-color: #e74c3c;
         }
-        .form-content.active {
-            display: block;
+
+        .btn-danger:hover {
+            background-color: #c0392b;
         }
-        .quantity-input {
-            width: 80px;
-            display: inline-block;
-            margin-right: 8px;
-        }
+
         .empty-state {
             text-align: center;
-            padding: 30px 0;
-            color: #64748b;
+            padding: 40px 0;
+            color: #7f8c8d;
         }
-        /* Custom scrollbar */
-        .ingredient-list::-webkit-scrollbar {
-            width: 6px;
+
+        .creation-options {
+            margin-top: 30px;
         }
-        .ingredient-list::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
+
+        .creation-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgb(43, 177, 235);
+        }
+
+        .nav-link.active {
+            background-color: rgb(43, 177, 235);
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="pantry-container">
-        <div class="header">
-            <h4 class="mb-0">My Pantry</h4>
-            <a th:href="@{/recipes/home}" class="btn btn-sm btn-outline-secondary">← Back</a>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Nibble Notebook</h2>
+        
+        <div class="nav-menu">
+            <a th:href="@{/recipes/home}" class="nav-link">Home</a>
+            <a th:href="@{/search}" class="nav-link">Search Recipes</a>
+            <a th:href="@{/recipes/my-recipes}" class="nav-link">My Recipes</a>
+            <a th:href="@{/recipes/add-recipe}" class="nav-link">Add New Recipe</a>
+            <a th:href="@{/my-meals}" class="nav-link">My Meals</a>
+            <a th:href="@{/meal-plan}" class="nav-link">Meal Plan</a>
+            <a th:href="@{/shopping-list}" class="nav-link">Meal Shopping List</a>
+            <a th:href="@{/shopping-lists}" class="nav-link">My Shopping List</a>
+            <a th:href="@{/my-pantry}" class="nav-link active">My Pantry</a>
         </div>
         
-        <div class="pantry-grid">
-            <div class="ingredient-list">
-                <h6 class="mb-3">Your Ingredients</h6>
-                
-                <div th:if="${pantryItems.empty}">
-                    <div class="empty-state">
-                        <p>Your pantry is empty</p>
-                        <p class="text-muted">Add ingredients using the form</p>
-                    </div>
-                </div>
-                
-                <div th:each="item : ${pantryItems}">
-                    <div class="pantry-item">
-                        <span th:text="${item.ingredient.name} + ' (' + ${item.quantity} + ' ' + ${item.ingredient.measurementUnit} + ')'"></span>
-                        <div class="item-actions">
-                            <form class="d-inline" th:action="@{/my-pantry/update}" method="post">
-                                <input type="hidden" name="ingredientId" th:value="${item.ingredient.id}">
-                                <input type="number" class="form-control form-control-sm quantity-input" 
-                                       name="newQuantity" th:value="${item.quantity}" step="0.01" min="0">
-                                <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
-                            </form>
-                            <form class="d-inline" th:action="@{/my-pantry/remove}" method="post">
-                                <input type="hidden" name="ingredientId" th:value="${item.ingredient.id}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-container">
-                <div class="form-tabs">
-                    <div class="form-tab active" onclick="switchTab('existing')">Add Existing</div>
-                    <div class="form-tab" onclick="switchTab('new')">Create New</div>
-                </div>
-                
-                <div id="existing-form" class="form-content active">
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>My Pantry</h2>
+        
+        <div class="pantry-container">
+
+            <!-- Add Existing Ingredient -->
+            <div class="creation-options">
+                <div class="creation-card">
+                    <h3>Add Existing Ingredient</h3>
                     <form th:action="@{/my-pantry/add-existing}" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Select Ingredient</label>
-                            <select class="form-select form-select-sm" name="ingredientId" required>
-                                <option value="">-- Select --</option>
-                                <option th:each="ingredient : ${allIngredients}"
-                                        th:value="${ingredient.id}"
-                                        th:text="${ingredient.name} + ' (' + ${ingredient.measurementUnit} + ')'">
-                                </option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control form-control-sm" name="quantity" step="0.01" min="0" required>
-                        </div>
-                        <button type="submit" class="btn btn-sm btn-primary w-100">Add to Pantry</button>
-                    </form>
-                </div>
-                
-                <div id="new-form" class="form-content">
-                    <form th:action="@{/my-pantry/add-new}" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control form-control-sm" th:field="${newIngredient.name}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Measurement Unit</label>
-                            <input type="text" class="form-control form-control-sm" th:field="${newIngredient.measurementUnit}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control form-control-sm" name="quantity" step="0.01" min="0" required>
-                        </div>
-                        <button type="submit" class="btn btn-sm btn-primary w-100">Add to Pantry</button>
+                        <select name="ingredientId" class="form-select" required>
+                            <option value="">Select Ingredient</option>
+                            <option th:each="ingredient : ${allIngredients}" 
+                                    th:value="${ingredient.id}" th:text="${ingredient.name} + ' (' + ${ingredient.measurementUnit} + ')'"></option>
+                        </select>
+                        <input type="number" name="quantity" class="form-control" step="0.01" min="0" required>
+                        <button type="submit" class="btn">Add to Pantry</button>
                     </form>
                 </div>
             </div>
+
+            <!-- Create New Ingredient -->
+            <div class="creation-options">
+                <div class="creation-card">
+                    <h3>Create New Ingredient</h3>
+                    <form th:action="@{/my-pantry/add-new}" method="post">
+                        <input type="text" name="name" class="form-control" placeholder="Ingredient Name" required>
+                        <input type="text" name="measurementUnit" class="form-control" placeholder="Measurement Unit" required>
+                        <input type="number" name="quantity" class="form-control" step="0.01" min="0" required>
+                        <button type="submit" class="btn">Add to Pantry</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ingredients List -->
+            <div th:if="${not #lists.isEmpty(pantryItems)}">
+                <div class="ingredient-list" th:each="item : ${pantryItems}">
+                    <div class="ingredient-item">
+                        <div class="ingredient-info">
+                            <span class="ingredient-name" th:text="${item.ingredient.name}">Milk</span>
+                            <span class="ingredient-quantity" th:text="${item.quantity} + ' ' + ${item.ingredient.measurementUnit}">500 ml</span>
+                        </div>
+                        <div class="ingredient-actions">
+                            <form th:action="@{/my-pantry/update}" method="post">
+                                <input type="hidden" name="ingredientId" th:value="${item.ingredient.id}">
+                                <input type="number" class="form-control form-control-sm" name="newQuantity" th:value="${item.quantity}" step="0.01" min="0">
+                                <button type="submit" class="btn">Update</button>
+                            </form>
+                            <form th:action="@{/my-pantry/remove}" method="post">
+                                <input type="hidden" name="ingredientId" th:value="${item.ingredient.id}">
+                                <button type="submit" class="btn btn-danger">×</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(pantryItems)}" class="empty-state">
+                <p>Your pantry is empty. Add ingredients using the form above.</p>
+            </div>
+
         </div>
     </div>
 
-    <script>
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.form-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.form-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName + '-form').classList.add('active');
-            document.querySelector(`.form-tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

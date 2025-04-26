@@ -1,1 +1,2 @@
 spring.thymeleaf.cache=false
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect

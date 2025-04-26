@@ -83,6 +83,26 @@ CREATE TABLE IF NOT EXISTS meal_plan_meals (
     FOREIGN KEY (meal_id) REFERENCES meal(meal_id)
 );
 
+-- Shopping List Table
+CREATE TABLE IF NOT EXISTS shopping_list (
+    list_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+
+-- Shopping List Items Table
+CREATE TABLE IF NOT EXISTS shopping_list_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    list_id INT,
+    ingredient_id INT,
+    quantity DOUBLE NOT NULL,
+    purchased BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (list_id) REFERENCES shopping_list(list_id),
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(ingredient_id)
+);
+
 -- insert ingredients otherwise pantry will not work
 INSERT INTO ingredients (name, measurement_unit) VALUES
 ('Flour', 'grams'),
