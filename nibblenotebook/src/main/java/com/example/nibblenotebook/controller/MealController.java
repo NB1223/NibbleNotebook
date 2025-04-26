@@ -2,6 +2,7 @@ package com.example.nibblenotebook.controller;
 
 import com.example.nibblenotebook.model.*;
 import com.example.nibblenotebook.repository.*;
+import com.example.nibblenotebook.service.PantryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Controller
 public class MealController {
@@ -28,6 +30,9 @@ public class MealController {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private PantryService pantryService;
     
     
     // View all meals page
@@ -335,7 +340,7 @@ public class MealController {
                 System.out.println("Finished collecting required ingredients. Total items: " + ingredientMap.size());
                 
                 // Step 3: Subtract ingredients already in pantry
-                List<UserIngredient> pantryItems = userRepository.findPantryItemsForUser(userId);
+                List<UserIngredient> pantryItems = pantryService.getUserPantry(user);
                 System.out.println("Found " + (pantryItems != null ? pantryItems.size() : 0) + " pantry items");
                 
                 if (pantryItems != null) {

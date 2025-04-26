@@ -38,9 +38,21 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute("user") User user, Model model, HttpSession session) {
+        System.out.println("Attempting login for username: " + user.getUsername());
         User dbUser = userRepo.findByUsername(user.getUsername());
 
-        if (dbUser == null || !dbUser.getPassword().equals(user.getPassword())) {
+        if (dbUser == null) {
+            System.out.println("No user found with username: " + user.getUsername());
+            model.addAttribute("error", "Invalid username or password");
+            return "login";
+        }
+
+        System.out.println("Found user: " + dbUser.getUsername() + ", ID: " + dbUser.getId());
+        System.out.println("Input password: " + user.getPassword());
+        System.out.println("DB password: " + dbUser.getPassword());
+
+        if (!dbUser.getPassword().equals(user.getPassword())) {
+            System.out.println("Password mismatch!");
             model.addAttribute("error", "Invalid username or password");
             return "login";
         }

@@ -2,6 +2,7 @@ package com.example.nibblenotebook.controller;
 
 import com.example.nibblenotebook.model.*;
 import com.example.nibblenotebook.repository.*;
+import com.example.nibblenotebook.service.PantryService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/test")
@@ -27,7 +29,7 @@ public class TestController {
     private RecipeRepository recipeRepository;
     
     @Autowired
-    private UserIngredientRepository userIngredientRepository;
+    private PantryService pantryService;
     
     @GetMapping("/meal-plans")
     public List<MealPlan> getMealPlans(HttpSession session) {
@@ -48,7 +50,34 @@ public class TestController {
         User user = userRepository.findById(userId);
         if (user == null) return List.of();
         
+        // Get the shopping list
         List<User.ShoppingListItem> shoppingList = user.generateShoppingList();
+        
+        // Get pantry items
+        List<UserIngredient> pantryItems = pantryService.getUserPantry(user);
+        
+        // Subtract pantry items from shopping list
+        if (pantryItems != null && !pantryItems.isEmpty()) {
+            List<User.ShoppingListItem> itemsToRemove = new ArrayList<>();
+            
+            for (UserIngredient ui : pantryItems) {
+                if (ui != null && ui.getIngredient() != null) {
+                    for (User.ShoppingListItem item : shoppingList) {
+                        if (item.getIngredient().getId() == ui.getIngredient().getId()) {
+                            double newQuantity = item.getQuantity() - ui.getQuantity();
+                            if (newQuantity <= 0) {
+                                itemsToRemove.add(item);
+                            } else {
+                                item.setQuantity(newQuantity);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            shoppingList.removeAll(itemsToRemove);
+        }
         
         return shoppingList.stream().map(item -> {
             Map<String, Object> map = new HashMap<>();
@@ -67,7 +96,7 @@ public class TestController {
         User user = userRepository.findById(userId);
         if (user == null) return List.of();
         
-        List<UserIngredient> pantry = userIngredientRepository.findByUser(user);
+        List<UserIngredient> pantry = pantryService.getUserPantry(user);
         
         return pantry.stream().map(ui -> {
             Map<String, Object> map = new HashMap<>();

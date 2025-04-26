@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Entity
-@Table(name = "user") // Change from "User" to "users" to avoid SQL reserved keyword
+@Table(name = "User") // Updated to match actual table name in database
 public class User {
 
     @Id
@@ -26,30 +26,11 @@ public class User {
     private List<Recipe> recipes;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserIngredient> userIngredients;
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<MealPlan> mealPlans;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Meal> meals;
     
-    @ManyToMany
-    @JoinTable(
-        name = "User_Saved_Recipes",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "recipe_id")
-    )
-    private List<Recipe> savedRecipes;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "User_Saved_Meals",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "meal_id")
-    )
-    private List<Meal> savedMeals;
-
     // Constructors
     public User() {}
 
@@ -100,14 +81,6 @@ public class User {
         this.recipes = recipes;
     }
     
-    public List<UserIngredient> getUserIngredients() {
-        return userIngredients;
-    }
-    
-    public void setUserIngredients(List<UserIngredient> userIngredients) {
-        this.userIngredients = userIngredients;
-    }
-    
     public List<MealPlan> getMealPlans() {
         return mealPlans;
     }
@@ -122,22 +95,6 @@ public class User {
     
     public void setMeals(List<Meal> meals) {
         this.meals = meals;
-    }
-    
-    public List<Recipe> getSavedRecipes() {
-        return savedRecipes;
-    }
-    
-    public void setSavedRecipes(List<Recipe> savedRecipes) {
-        this.savedRecipes = savedRecipes;
-    }
-    
-    public List<Meal> getSavedMeals() {
-        return savedMeals;
-    }
-    
-    public void setSavedMeals(List<Meal> savedMeals) {
-        this.savedMeals = savedMeals;
     }
     
     // Shopping list generation
@@ -166,28 +123,9 @@ public class User {
                 }
             }
             
-            // Subtract ingredients already in pantry
-            if (userIngredients != null && !userIngredients.isEmpty()) {
-                List<ShoppingListItem> itemsToRemove = new ArrayList<>();
-                
-                for (UserIngredient ui : userIngredients) {
-                    if (ui != null && ui.getIngredient() != null) {
-                        for (ShoppingListItem item : shoppingList) {
-                            if (item.getIngredient().getId() == ui.getIngredient().getId()) {
-                                double newQuantity = item.getQuantity() - ui.getQuantity();
-                                if (newQuantity <= 0) {
-                                    itemsToRemove.add(item);
-                                } else {
-                                    item.setQuantity(newQuantity);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                shoppingList.removeAll(itemsToRemove);
-            }
+            // Note: Pantry ingredients are now handled in the controller, not here
+            // as we don't have direct access to userIngredients anymore
+            
         } catch (Exception e) {
             // Log the error - in a production app, use a logger
             System.err.println("Error in generateShoppingList: " + e.getMessage());

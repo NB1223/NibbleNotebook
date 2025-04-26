@@ -154,14 +154,14 @@
         
         <div class="login-form">
             <h1>Login</h1>
-            <form th:action="@{/login}" method="post">
+            <form th:action="@{/login}" th:object="${user}" method="post">
                 <div class="form-group">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required autocomplete="username">
+                    <input type="text" id="username" th:field="*{username}" required autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                    <input type="password" id="password" th:field="*{password}" required autocomplete="current-password">
                 </div>
                 <button type="submit">Login</button>
             </form>

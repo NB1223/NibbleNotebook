@@ -3,16 +3,16 @@ package com.example.nibblenotebook.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "User_Ingredients")
+@Table(name = "Recipe_Ingredients")
 public class UserIngredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_ingredient_id")
+    @Column(name = "recipe_ingredient_id")
     private int id;
     
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
     
     @ManyToOne
     @JoinColumn(name = "ingredient_id", nullable = false)
@@ -20,12 +20,24 @@ public class UserIngredient {
     
     @Column(nullable = false)
     private double quantity;
-
+    
     // Constructors, getters, and setters
     public UserIngredient() {}
 
+    public UserIngredient(Recipe recipe, Ingredient ingredient, double quantity) {
+        this.recipe = recipe;
+        this.ingredient = ingredient;
+        this.quantity = quantity;
+    }
+    
+    // For compatibility with previous code
     public UserIngredient(User user, Ingredient ingredient, double quantity) {
-        this.user = user;
+        // Create a temporary recipe for user's ingredient storage
+        Recipe tempRecipe = new Recipe();
+        tempRecipe.setUser(user);
+        tempRecipe.setName("User Ingredient: " + ingredient.getName());
+        
+        this.recipe = tempRecipe;
         this.ingredient = ingredient;
         this.quantity = quantity;
     }
@@ -34,13 +46,17 @@ public class UserIngredient {
     public int getId() {
         return id;
     }
-
-    public User getUser() {
-        return user;
+    
+    public Recipe getRecipe() {
+        return recipe;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setRecipe(Recipe recipe) {
+        this.recipe = recipe;
+    }
+    
+    public User getUser() {
+        return recipe != null ? recipe.getUser() : null;
     }
 
     public Ingredient getIngredient() {

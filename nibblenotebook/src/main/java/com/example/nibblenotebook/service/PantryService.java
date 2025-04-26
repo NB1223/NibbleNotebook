@@ -11,5 +11,5 @@ public interface PantryService {
     UserIngredient updateIngredientQuantity(User user, int ingredientId, double newQuantity);
     void removeIngredientFromPantry(User user, int ingredientId);
     Ingredient createNewIngredient(String name, String measurementUnit);
-    List<Ingredient> getAllIngredients(); // New method
+    List<Ingredient> getAllIngredients();
 }
