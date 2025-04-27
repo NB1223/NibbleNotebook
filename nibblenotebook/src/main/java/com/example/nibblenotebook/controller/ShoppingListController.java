@@ -76,6 +76,7 @@ public class ShoppingListController {
         
         model.addAttribute("shoppingList", shoppingList);
         model.addAttribute("allIngredients", shoppingListContext.getAllIngredients());
+        model.addAttribute("isManualList", !shoppingList.getName().startsWith("For: "));
         return "shopping-list";
     }
 
