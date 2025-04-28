@@ -25,7 +25,6 @@ public class RecipeIngredient {
     private Recipe recipe;
 
 
-    // Constructors
     public RecipeIngredient() {}
 
     public RecipeIngredient(Recipe recipe, Ingredient ingredient, double quantity) {
@@ -38,31 +37,12 @@ public class RecipeIngredient {
         recipe.getIngredients().add(this);
     }
 
-    // Getters and setters
-    public int getRecipeIngredientId() {
-        return recipeingredientid;
-    }
-
-    public Ingredient getIngredient() {
-        return ingredient;
-    }
-
-    public double getQuantity() {
-        return quantity;
-    }
-
-    public void setRecipeIngredient(int recipeingredientid) {
-        this.recipeingredientid = recipeingredientid;
-    }
-
-    public void setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
-    }
-
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
-    }
-
+    public int getRecipeIngredientId() { return recipeingredientid; }
+    public Ingredient getIngredient() { return ingredient; }
+    public double getQuantity() { return quantity; }
+    public void setRecipeIngredient(int recipeingredientid) { this.recipeingredientid = recipeingredientid; }
+    public void setIngredient(Ingredient ingredient) { this.ingredient = ingredient; }
+    public void setQuantity(double quantity) { this.quantity = quantity; }
     public Recipe getRecipe() { return recipe; }
     public void setRecipe(Recipe recipe) { this.recipe = recipe; }
 }

@@ -30,7 +30,6 @@ public class ShoppingItem {
         this.purchased = false;
     }
 
-    // Getters and Setters
     public int getItemId() { return itemId; }
     public void setItemId(int itemId) { this.itemId = itemId; }
     public ShoppingList getShoppingList() { return shoppingList; }

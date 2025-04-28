@@ -36,29 +36,23 @@ public class Meal {
         Breakfast, Lunch, Dinner, Snack
     }
 
-    // Constructor
     public Meal() {}
 
-    // Builder pattern method
     public static MealBuilder builder() {
         return new MealBuilder();
     }
 
-    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
     public MealTime getTime() { return time; }
     public void setTime(MealTime time) { this.time = time; }
-
     public List<Recipe> getRecipes() { return recipes; }
     public void setRecipes(List<Recipe> recipes) { this.recipes = recipes; }
-    
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
     
     public void addRecipe(Recipe recipe) {
         if (this.recipes == null) {

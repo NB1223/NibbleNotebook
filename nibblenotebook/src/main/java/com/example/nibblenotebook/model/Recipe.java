@@ -32,36 +32,26 @@ public class Recipe {
 
     public Recipe() {}
 
-    // Static method to get a builder instance
     public static RecipeBuilder builder() {
         return new RecipeBuilder();
     }
 
-    // Getters & Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
     public String getCuisine() { return cuisine; }
     public void setCuisine(String cuisine) { this.cuisine = cuisine; }
-
     public int getTime() { return time; }
     public void setTime(int time) { this.time = time; }
-    
     public boolean isVegetarian() { return vegetarian; }
     public void setVegetarian(boolean vegetarian) { this.vegetarian = vegetarian; }
-
     public List<RecipeStep> getSteps() { return steps; }
     public void setSteps(List<RecipeStep> steps) { this.steps = steps; }
-
     public List<RecipeIngredient> getIngredients() { return ingredients; }
     public void setIngredients(List<RecipeIngredient> ingredients) { this.ingredients = ingredients; }
 }

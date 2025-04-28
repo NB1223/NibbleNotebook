@@ -10,11 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 @Controller
 public class MealController {
@@ -35,7 +33,6 @@ public class MealController {
     private PantryService pantryService;
     
     
-    // View all meals page
     @GetMapping("/my-meals")
     public String viewMyMeals(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
@@ -52,7 +49,6 @@ public class MealController {
         return "my_meals";
     }
     
-    // Add meal form page
     @GetMapping("/add-meal")
     public String showAddMealForm(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
@@ -70,7 +66,6 @@ public class MealController {
         return "add_meal";
     }
     
-    // Process add meal form
     @PostMapping("/add-meal")
     public String addMeal(@RequestParam String mealName,
                          @RequestParam Meal.MealTime mealTime,
@@ -103,7 +98,6 @@ public class MealController {
         return "redirect:/my-meals";
     }
     
-    // View meal plan page
     @GetMapping("/meal-plan")
     public String viewMealPlan(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
@@ -137,7 +131,6 @@ public class MealController {
             System.err.println("Error loading meal plan: " + e.getMessage());
             e.printStackTrace();
             
-            // Add default empty lists to prevent template errors
             model.addAttribute("mealPlans", new ArrayList<>());
             model.addAttribute("meals", new ArrayList<>());
             model.addAttribute("days", MealPlan.DayOfWeek.values());
@@ -149,7 +142,6 @@ public class MealController {
         }
     }
     
-    // Process add to meal plan form
     @PostMapping("/add-to-meal-plan")
     public String addToMealPlan(@RequestParam MealPlan.DayOfWeek day,
                               @RequestParam(name = "mealTime") Meal.MealTime mealTime,
@@ -167,7 +159,6 @@ public class MealController {
             System.out.println("Day: " + day + ", Meal Time: " + mealTime);
             System.out.println("Selected meal IDs: " + (mealIds != null ? mealIds : "none"));
             
-            // Check if meal plan for this day already exists
             List<MealPlan> existingPlans = mealPlanRepository.findByUserAndDay(user, day);
             MealPlan mealPlan;
             
@@ -175,17 +166,14 @@ public class MealController {
                 mealPlan = existingPlans.get(0);
                 System.out.println("Found existing meal plan ID: " + mealPlan.getId());
                 
-                // Don't clear existing meals, just manage the ones for this meal time
                 List<Meal> currentMeals = new ArrayList<>();
                 if (mealPlan.getMeals() != null) {
                     currentMeals.addAll(mealPlan.getMeals());
                 }
                 
-                // Remove meals for this specific meal time
                 currentMeals.removeIf(meal -> meal != null && meal.getTime() == mealTime);
                 System.out.println("Removed existing meals for meal time: " + mealTime);
                 
-                // Keep the filtered meals (other meal times)
                 mealPlan.setMeals(currentMeals);
             } else {
                 mealPlan = new MealPlan();
@@ -195,7 +183,6 @@ public class MealController {
                 System.out.println("Created new meal plan for day: " + day);
             }
             
-            // Add selected meals for this meal time
             int addedCount = 0;
             if (mealIds != null && !mealIds.isEmpty()) {
                 for (Integer mealId : mealIds) {
@@ -223,7 +210,6 @@ public class MealController {
         }
     }
     
-    // View meal details page
     @GetMapping("/meals/{mealId}/view")
     public String viewMealDetails(@PathVariable int mealId,
                                 HttpSession session,
@@ -241,7 +227,6 @@ public class MealController {
         return "meal_view";
     }
     
-    // Delete meal
     @PostMapping("/meals/{mealId}/delete")
     public String deleteMeal(@PathVariable int mealId,
                            HttpSession session) {
@@ -259,7 +244,6 @@ public class MealController {
         return "redirect:/my-meals";
     }
     
-    // Shopping list page
     @GetMapping("/shopping-list")
     public String viewShoppingList(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
@@ -273,19 +257,15 @@ public class MealController {
         try {
             System.out.println("Starting shopping list generation for user ID: " + userId);
             
-            // Create manual shopping list instead of navigating through relationships
-            // Step 1: Get all meal plans for this user
             List<MealPlan> userMealPlans = mealPlanRepository.findByUser(user);
             System.out.println("Found " + (userMealPlans != null ? userMealPlans.size() : 0) + " meal plans");
             
             if (userMealPlans != null && !userMealPlans.isEmpty()) {
-                // Step 2: Get all ingredients across all recipes in meals in these meal plans
                 Map<Integer, ShoppingListItem> ingredientMap = new HashMap<>();
                 
                 for (MealPlan mealPlan : userMealPlans) {
                     System.out.println("Processing meal plan ID: " + mealPlan.getId() + " for day: " + mealPlan.getDay());
                     
-                    // Get all meals for this meal plan
                     List<Meal> meals = mealPlan.getMeals();
                     System.out.println("  Found " + (meals != null ? meals.size() : 0) + " meals in this plan");
                     
@@ -296,13 +276,11 @@ public class MealController {
                                 List<Recipe> recipes = meal.getRecipes();
                                 System.out.println("      Found " + (recipes != null ? recipes.size() : 0) + " recipes in this meal");
                                 
-                                // Each meal has recipes
                                 if (recipes != null) {
                                     for (Recipe recipe : recipes) {
                                         if (recipe != null) {
                                             System.out.println("        Processing recipe ID: " + recipe.getId() + ", name: " + recipe.getName());
                                             
-                                            // Manually fetch recipe ingredients 
                                             List<RecipeIngredient> ingredients = recipeRepository.findIngredientsForRecipe(recipe.getId());
                                             System.out.println("          Found " + (ingredients != null ? ingredients.size() : 0) + " ingredients");
                                             
@@ -315,13 +293,11 @@ public class MealController {
                                                         System.out.println("            Adding ingredient: " + ri.getIngredient().getName() + 
                                                                           ", quantity: " + quantity);
                                                         
-                                                        // If already in map, add quantity
                                                         if (ingredientMap.containsKey(ingredientId)) {
                                                             ShoppingListItem existingItem = ingredientMap.get(ingredientId);
                                                             existingItem.setQuantity(existingItem.getQuantity() + quantity);
                                                             System.out.println("              Updated quantity to: " + existingItem.getQuantity());
                                                         } else {
-                                                            // Otherwise create new
                                                             ShoppingListItem newItem = new ShoppingListItem(ri.getIngredient(), quantity);
                                                             ingredientMap.put(ingredientId, newItem);
                                                             System.out.println("              Added new item");
@@ -339,7 +315,6 @@ public class MealController {
                 
                 System.out.println("Finished collecting required ingredients. Total items: " + ingredientMap.size());
                 
-                // Step 3: Subtract ingredients already in pantry
                 List<UserIngredient> pantryItems = pantryService.getUserPantry(user);
                 System.out.println("Found " + (pantryItems != null ? pantryItems.size() : 0) + " pantry items");
                 
@@ -355,11 +330,9 @@ public class MealController {
                                 System.out.println("    Found in shopping list. Adjusting from " + item.getQuantity() + " to " + newQuantity);
                                 
                                 if (newQuantity <= 0) {
-                                    // Remove if we have enough or more
                                     ingredientMap.remove(ingredientId);
                                     System.out.println("    Removed from shopping list (sufficient quantity in pantry)");
                                 } else {
-                                    // Update quantity if we need more
                                     item.setQuantity(newQuantity);
                                     System.out.println("    Updated quantity to: " + newQuantity);
                                 }
@@ -368,7 +341,6 @@ public class MealController {
                     }
                 }
                 
-                // Convert map to list
                 shoppingList = new ArrayList<>(ingredientMap.values());
                 System.out.println("Final shopping list contains " + shoppingList.size() + " items");
             }
@@ -376,7 +348,6 @@ public class MealController {
         } catch (Exception e) {
             System.err.println("Error generating shopping list: " + e.getMessage());
             e.printStackTrace();
-            // Add the error message to the model for debugging
             model.addAttribute("errorMessage", "Error: " + e.getMessage());
         }
         

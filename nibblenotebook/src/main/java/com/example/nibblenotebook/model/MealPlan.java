@@ -2,9 +2,7 @@ package com.example.nibblenotebook.model;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "Meal_Plan")
@@ -35,21 +33,17 @@ public class MealPlan {
         Mon, Tues, Wed, Thurs, Fri, Sat, Sun
     }
 
-    // Constructor
     public MealPlan() {}
 
-    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-
     public DayOfWeek getDay() { return day; }
     public void setDay(DayOfWeek day) { this.day = day; }
-
     public List<Meal> getMeals() { return meals; }
     public void setMeals(List<Meal> meals) { this.meals = meals; }
+
     
     public void addMeal(Meal meal) {
         if (this.meals == null) {
@@ -64,7 +58,6 @@ public class MealPlan {
         }
     }
     
-    // Get meals for a specific time
     public List<Meal> getMealsForTime(Meal.MealTime mealTime) {
         List<Meal> filteredMeals = new ArrayList<>();
         

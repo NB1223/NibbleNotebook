@@ -103,7 +103,6 @@ public class RecipeController {
             return "redirect:/recipes/my-recipes";
         }
 
-        // Initialize ingredients if null
         if (recipe.getIngredients() == null) {
             recipe.setIngredients(new ArrayList<>());
         }
@@ -112,7 +111,7 @@ public class RecipeController {
         model.addAttribute("allIngredients", ingredientRepo.findAll());
         model.addAttribute("name", session.getAttribute("name"));
 
-        return "recipe_ingredients"; // Make sure this file exists!
+        return "recipe_ingredients";
     }
 
     @PostMapping("/{recipeId}/ingredients/add")
@@ -129,7 +128,6 @@ public class RecipeController {
             throw new EntityNotFoundException("Ingredient not found with id: " + ingredientId);
         }
     
-        // Check if relationship already exists
         RecipeIngredient existing = recipe.getIngredients().stream()
             .filter(ri -> ri.getIngredient().getId() == ingredientId)
             .findFirst()
@@ -156,7 +154,6 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
         
-        // Verify the recipe belongs to the user
         Recipe recipe = recipeRepo.findById(recipeId);
         if (recipe == null || recipe.getUser().getId() != userId) {
             return "redirect:/recipes/my-recipes";
@@ -200,7 +197,6 @@ public class RecipeController {
             return "redirect:/recipes/my-recipes";
         }
 
-        // Get current steps to determine next step number
         List<RecipeStep> currentSteps = recipeStepRepo.findByRecipe(recipe);
         int nextStepNumber = currentSteps.isEmpty() ? 1 : 
                             currentSteps.stream()
@@ -227,7 +223,6 @@ public class RecipeController {
 
         recipeStepRepo.deleteById(stepId);
         
-        // Re-number remaining steps
         List<RecipeStep> remainingSteps = recipeStepRepo.findByRecipe(recipe);
         remainingSteps.sort(Comparator.comparingInt(RecipeStep::getStepNumber));
         
@@ -245,10 +240,8 @@ public class RecipeController {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return "redirect:/login";
 
-        // Get all recipes to display
         List<Recipe> recipes = recipeRepo.findAll();
         
-        // Add debug logging
         System.out.println("Number of recipes found: " + recipes.size());
         recipes.forEach(recipe -> System.out.println("Recipe: " + recipe.getName()));
         

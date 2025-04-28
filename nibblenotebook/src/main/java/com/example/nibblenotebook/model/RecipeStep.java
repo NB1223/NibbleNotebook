@@ -28,16 +28,12 @@ public class RecipeStep {
         this.instruction = instruction;
     }
 
-    // Getters & Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-
     public Recipe getRecipe() { return recipe; }
     public void setRecipe(Recipe recipe) { this.recipe = recipe; }
-
     public int getStepNumber() { return stepNumber; }
     public void setStepNumber(int stepNumber) { this.stepNumber = stepNumber; }
-
     public String getInstruction() { return instruction; }
     public void setInstruction(String instruction) { this.instruction = instruction; }
 }
