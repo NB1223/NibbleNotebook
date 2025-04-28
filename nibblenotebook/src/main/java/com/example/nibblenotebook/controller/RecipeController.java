@@ -1,5 +1,20 @@
 package com.example.nibblenotebook.controller;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.nibblenotebook.model.Ingredient;
 import com.example.nibblenotebook.model.Recipe;
 import com.example.nibblenotebook.model.RecipeIngredient;
@@ -13,15 +28,6 @@ import com.example.nibblenotebook.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Comparator;
 
 @Controller
 @RequestMapping("/recipes")
@@ -86,7 +92,9 @@ public class RecipeController {
 
         recipeRepo.save(newRecipe);
 
-        return "redirect:/recipes/my-recipes";
+        int recipe_id = newRecipe.getId();
+
+        return "redirect:/recipes/"+recipe_id+"/ingredients";
     }
 
     @GetMapping("/{recipeId}/ingredients")

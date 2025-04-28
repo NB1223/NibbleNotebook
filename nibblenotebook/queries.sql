@@ -173,8 +173,6 @@ INSERT INTO recipe_steps (recipe_id, step_number, instruction) VALUES
 (1, 3, 'Combine wet and dry ingredients, stirring until just combined'),
 (1, 4, 'Heat a griddle over medium heat and pour 1/4 cup batter for each pancake'),
 (1, 5, 'Cook until bubbles form on surface, then flip and cook until golden brown'),
-
--- Chocolate Chip Cookies
 (2, 1, 'Preheat oven to 375°F (190°C)'),
 (2, 2, 'Cream together butter and sugars until light and fluffy'),
 (2, 3, 'Beat in eggs one at a time, then stir in vanilla'),
@@ -182,8 +180,6 @@ INSERT INTO recipe_steps (recipe_id, step_number, instruction) VALUES
 (2, 5, 'Fold in chocolate chips'),
 (2, 6, 'Drop by rounded tablespoon onto ungreased baking sheets'),
 (2, 7, 'Bake for 9-11 minutes until golden brown'),
-
--- Grilled Chicken Salad
 (3, 1, 'Season chicken breasts with salt and pepper'),
 (3, 2, 'Grill chicken for 6-8 minutes per side until cooked through'),
 (3, 3, 'Let chicken rest, then slice'),

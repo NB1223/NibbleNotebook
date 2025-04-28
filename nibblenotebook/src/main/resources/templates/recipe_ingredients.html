@@ -139,6 +139,10 @@
             margin-bottom: 30px;
         }
 
+        .removefrm {
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+        }
+
         label {
             display: block;
             margin-bottom: 8px;
@@ -246,7 +250,7 @@
                     <td th:text="${ri.quantity}"></td>
                     <td th:text="${ri.ingredient.measurementUnit}"></td>
                     <td>
-                        <form th:action="@{/recipes/ingredients/delete}" method="post" style="display:inline">
+                        <form th:action="@{/recipes/ingredients/delete}" method="post" style="display:inline" class="removefrm">
                             <input type="hidden" name="recipeIngredientId" th:value="${ri.recipeIngredientId}" />
                             <input type="hidden" name="recipeId" th:value="${recipe.id}" />
                             <button type="submit" class="delete">Remove</button>
