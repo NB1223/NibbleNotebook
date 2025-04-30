@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface MealPlanRepository extends JpaRepository<MealPlan, Integer> {
     List<MealPlan> findByUser(User user);
-    
     List<MealPlan> findByUserAndDay(User user, MealPlan.DayOfWeek day);
 } 

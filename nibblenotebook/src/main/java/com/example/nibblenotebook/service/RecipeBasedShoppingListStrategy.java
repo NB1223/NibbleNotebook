@@ -28,25 +28,21 @@ public class RecipeBasedShoppingListStrategy implements ShoppingListStrategy {
         
         Recipe recipe = (Recipe) source;
         
-        // 1. Get all ingredients required by the recipe
         List<RecipeIngredient> recipeIngredients = entityManager.createQuery(
             "SELECT ri FROM RecipeIngredient ri WHERE ri.recipe = :recipe", RecipeIngredient.class)
             .setParameter("recipe", recipe)
             .getResultList();
         
-        // 2. Get user's pantry quantities
         Map<Ingredient, Double> pantryQuantities = pantryFactory.getPantryQuantities(user);
         
-        // 3. Create shopping list
         ShoppingList shoppingList = new ShoppingList(user, "For: " + recipe.getName());
         entityManager.persist(shoppingList);
         
-        // 4. Calculate needed items
         for (RecipeIngredient recipeIngredient : recipeIngredients) {
             Ingredient ingredient = recipeIngredient.getIngredient();
             double neededQty = recipeIngredient.getQuantity();
             
-            // Subtract what's available in pantry
+            // kick out how much ever prestn in pantry
             if (pantryQuantities.containsKey(ingredient)) {
                 neededQty = Math.max(0, neededQty - pantryQuantities.get(ingredient));
             }

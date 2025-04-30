@@ -115,7 +115,6 @@ public class MealController {
             List<Meal> userMeals = mealRepository.findByUser(user);
             System.out.println("Found " + (userMeals != null ? userMeals.size() : 0) + " meals for user");
             
-            // Organize meal plans by day
             if (mealPlans != null && !mealPlans.isEmpty()) {
                 mealPlans.sort((mp1, mp2) -> mp1.getDay().ordinal() - mp2.getDay().ordinal());
             }
@@ -206,7 +205,7 @@ public class MealController {
             e.printStackTrace();
             
             model.addAttribute("errorMessage", "Error adding to meal plan: " + e.getMessage());
-            return viewMealPlan(session, model); // Re-render the meal plan page with error
+            return viewMealPlan(session, model);
         }
     }
     

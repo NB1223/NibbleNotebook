@@ -14,8 +14,6 @@ public interface MealRepository extends JpaRepository<Meal, Integer> {
     
     @Query("SELECT m FROM Meal m JOIN m.recipes r WHERE r.id = :recipeId")
     List<Meal> findByRecipeId(int recipeId);
-    
     List<Meal> findByNameContainingIgnoreCase(String name);
-    
     List<Meal> findByUserAndTime(User user, Meal.MealTime time);
 } 
