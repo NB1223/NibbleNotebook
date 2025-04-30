@@ -1,9 +1,5 @@
 package com.example.nibblenotebook.model;
 
-/**
- * A helper class to represent shopping list items.
- * This provides better separation than using User's inner class.
- */
 public class ShoppingListItem {
     private Ingredient ingredient;
     private double quantity;

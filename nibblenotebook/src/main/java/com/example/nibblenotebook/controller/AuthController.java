@@ -57,10 +57,8 @@ public class AuthController {
             return "login";
         }
 
-        // Debug print
         System.out.println("Logging in: " + dbUser.getName() + " (ID: " + dbUser.getId() + ")");
 
-        // Store in session
         session.setAttribute("userId", dbUser.getId());
         session.setAttribute("username", dbUser.getUsername());
         session.setAttribute("name", dbUser.getName());

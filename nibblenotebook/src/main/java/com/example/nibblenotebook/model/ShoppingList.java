@@ -32,7 +32,6 @@ public class ShoppingList {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public int getListId() { return listId; }
     public void setListId(int listId) { this.listId = listId; }
     public User getUser() { return user; }

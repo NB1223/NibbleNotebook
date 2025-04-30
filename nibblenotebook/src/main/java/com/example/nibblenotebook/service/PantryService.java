@@ -9,7 +9,6 @@ import java.util.Map;
 public interface PantryService {
     List<UserIngredient> getUserPantry(User user);
     
-    // Unified method names
     UserIngredient addToPantry(User user, Ingredient ingredient, double quantity);
     void removeFromPantry(User user, int ingredientId);
     UserIngredient updateQuantity(User user, int ingredientId, double newQuantity);

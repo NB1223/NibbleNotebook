@@ -31,14 +31,11 @@ public class SearchController {
         
         List<Recipe> recipes;
         
-        // If no filters applied, get all recipes
         if ((cuisine == null || cuisine.isEmpty()) && vegetarian == null && maxTime == null) {
             recipes = recipeRepository.findAll();
         } else {
-            // Start with all recipes
             recipes = new ArrayList<>(recipeRepository.findAll());
             
-            // Apply filters
             if (cuisine != null && !cuisine.isEmpty()) {
                 recipes.removeIf(recipe -> !recipe.getCuisine().equalsIgnoreCase(cuisine));
             }
@@ -52,7 +49,6 @@ public class SearchController {
             }
         }
         
-        // Get a list of unique cuisines for the dropdown
         List<String> cuisines = recipeRepository.findDistinctCuisines();
         
         model.addAttribute("recipes", recipes);

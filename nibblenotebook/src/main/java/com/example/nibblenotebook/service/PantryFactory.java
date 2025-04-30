@@ -37,7 +37,6 @@ public class PantryFactory implements PantryService {
 
     @Override
     public UserIngredient addToPantry(User user, Ingredient ingredient, double quantity) {
-        // Implementation from your existing addIngredientToPantry
         List<Recipe> pantryRecipes = entityManager.createQuery(
             "SELECT r FROM Recipe r WHERE r.user = :user AND r.name = :name", 
             Recipe.class)
@@ -62,7 +61,6 @@ public class PantryFactory implements PantryService {
 
     @Override
     public void removeFromPantry(User user, int ingredientId) {
-        // Implementation from your existing removeIngredientFromPantry
         UserIngredient userIngredient = entityManager.createQuery(
             "SELECT ri FROM UserIngredient ri JOIN ri.recipe r WHERE r.user = :user AND ri.ingredient.id = :ingredientId AND r.name LIKE 'User Ingredient:%'", 
             UserIngredient.class)
@@ -86,7 +84,6 @@ public class PantryFactory implements PantryService {
 
     @Override
     public UserIngredient updateQuantity(User user, int ingredientId, double newQuantity) {
-        // Implementation from your existing updateIngredientQuantity
         UserIngredient userIngredient = entityManager.createQuery(
             "SELECT ri FROM UserIngredient ri JOIN ri.recipe r WHERE r.user = :user AND ri.ingredient.id = :ingredientId AND r.name LIKE 'User Ingredient:%'", 
             UserIngredient.class)
@@ -113,7 +110,7 @@ public class PantryFactory implements PantryService {
             .collect(Collectors.toMap(
                 UserIngredient::getIngredient,
                 UserIngredient::getQuantity,
-                (q1, q2) -> q1 + q2 // Merge quantities if same ingredient appears multiple times
+                (q1, q2) -> q1 + q2 
             ));
     }
 

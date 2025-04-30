@@ -71,7 +71,6 @@ public class ShoppingListController {
                                  Model model) {
         User user = getAuthenticatedUser(session);
         
-        // Always regenerate the list when viewed
         ShoppingList shoppingList = shoppingListContext.regenerateList(id, user.getId());
         
         model.addAttribute("shoppingList", shoppingList);
@@ -95,7 +94,6 @@ public class ShoppingListController {
     public String deleteShoppingList(@PathVariable int id, HttpSession session) {
         User user = getAuthenticatedUser(session);
         
-        // First, fetch the shopping list for the current user
         ShoppingList shoppingList = entityManager.createQuery(
             "SELECT sl FROM ShoppingList sl WHERE sl.listId = :listId AND sl.user.id = :userId",
             ShoppingList.class)
@@ -136,7 +134,6 @@ public class ShoppingListController {
     @Autowired
     private PantryService pantryService;
 
-    // Add to your controller
     @GetMapping("/pantry")
     public String viewPantry(HttpSession session, Model model) {
         User user = getAuthenticatedUser(session);

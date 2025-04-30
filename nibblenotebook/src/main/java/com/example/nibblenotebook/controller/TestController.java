@@ -50,13 +50,10 @@ public class TestController {
         User user = userRepository.findById(userId);
         if (user == null) return List.of();
         
-        // Get the shopping list
         List<User.ShoppingListItem> shoppingList = user.generateShoppingList();
         
-        // Get pantry items
         List<UserIngredient> pantryItems = pantryService.getUserPantry(user);
         
-        // Subtract pantry items from shopping list
         if (pantryItems != null && !pantryItems.isEmpty()) {
             List<User.ShoppingListItem> itemsToRemove = new ArrayList<>();
             

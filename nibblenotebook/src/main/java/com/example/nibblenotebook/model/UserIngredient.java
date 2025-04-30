@@ -21,7 +21,6 @@ public class UserIngredient {
     @Column(nullable = false)
     private double quantity;
     
-    // Constructors, getters, and setters
     public UserIngredient() {}
 
     public UserIngredient(Recipe recipe, Ingredient ingredient, double quantity) {
@@ -36,9 +35,7 @@ public class UserIngredient {
                this.recipe.getName().startsWith("User Ingredient:");
     }
     
-    // For compatibility with previous code
     public UserIngredient(User user, Ingredient ingredient, double quantity) {
-        // Create a temporary recipe for user's ingredient storage
         Recipe tempRecipe = new Recipe();
         tempRecipe.setUser(user);
         tempRecipe.setName("User Ingredient: " + ingredient.getName());
@@ -48,7 +45,6 @@ public class UserIngredient {
         this.quantity = quantity;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }

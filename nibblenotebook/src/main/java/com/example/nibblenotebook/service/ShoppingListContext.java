@@ -29,7 +29,6 @@ public class ShoppingListContext {
 
     @Transactional
     public ShoppingList regenerateList(int listId, int userId) {
-        // 1. Get the existing list
         ShoppingList list = entityManager.createQuery(
             "SELECT sl FROM ShoppingList sl WHERE sl.listId = :listId AND sl.user.id = :userId", 
             ShoppingList.class)
@@ -37,11 +36,9 @@ public class ShoppingListContext {
             .setParameter("userId", userId)
             .getSingleResult();
 
-        // 2. Only regenerate recipe-based lists
         if (list.getName().startsWith("For: ")) {
             String recipeName = list.getName().substring(5);
             
-            // 3. Get the recipe
             Recipe recipe = entityManager.createQuery(
                 "SELECT r FROM Recipe r WHERE r.user.id = :userId AND r.name = :name",
                 Recipe.class)
@@ -49,12 +46,10 @@ public class ShoppingListContext {
                 .setParameter("name", recipeName)
                 .getSingleResult();
 
-            // 4. Clear existing items (but keep the list)
             entityManager.createQuery("DELETE FROM ShoppingItem i WHERE i.shoppingList = :list")
                     .setParameter("list", list)
                     .executeUpdate();
 
-            // 5. Regenerate items for the same list
             List<RecipeIngredient> recipeIngredients = entityManager.createQuery(
                 "SELECT ri FROM RecipeIngredient ri WHERE ri.recipe = :recipe", 
                 RecipeIngredient.class)
@@ -72,7 +67,6 @@ public class ShoppingListContext {
             }
         }
         
-        // 6. Refresh and return the same list
         entityManager.refresh(list);
         return list;
     }

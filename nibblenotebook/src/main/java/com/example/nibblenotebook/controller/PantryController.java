@@ -29,12 +29,10 @@ public class PantryController {
         User user = new User();
         user.setId(userId);
         
-        // Existing code
         List<UserIngredient> pantryItems = pantryService.getUserPantry(user);
         model.addAttribute("pantryItems", pantryItems);
         model.addAttribute("newIngredient", new Ingredient());
         
-        // New code - just add this line
         model.addAttribute("allIngredients", pantryService.getAllIngredients());
         
         return "pantry";

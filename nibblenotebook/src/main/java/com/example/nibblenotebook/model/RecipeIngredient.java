@@ -21,7 +21,7 @@ public class RecipeIngredient {
     private double quantity;
 
     @ManyToOne
-    @JoinColumn(name = "recipe_id") // or whatever your foreign key column is
+    @JoinColumn(name = "recipe_id") 
     private Recipe recipe;
 
 

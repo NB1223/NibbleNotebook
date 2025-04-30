@@ -31,7 +31,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Meal> meals;
     
-    // Constructors
     public User() {}
 
     public User(String username, String password, String name) {
@@ -40,7 +39,6 @@ public class User {
         this.name = name;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }
@@ -97,12 +95,10 @@ public class User {
         this.meals = meals;
     }
     
-    // Shopping list generation
     public List<ShoppingListItem> generateShoppingList() {
         List<ShoppingListItem> shoppingList = new ArrayList<>();
         
         try {
-            // Calculate required ingredients from meal plans
             if (mealPlans != null && !mealPlans.isEmpty()) {
                 for (MealPlan mealPlan : mealPlans) {
                     if (mealPlan != null && mealPlan.getMeals() != null && !mealPlan.getMeals().isEmpty()) {
@@ -123,14 +119,10 @@ public class User {
                 }
             }
             
-            // Note: Pantry ingredients are now handled in the controller, not here
-            // as we don't have direct access to userIngredients anymore
-            
+
         } catch (Exception e) {
-            // Log the error - in a production app, use a logger
             System.err.println("Error in generateShoppingList: " + e.getMessage());
             e.printStackTrace();
-            // Return an empty list in case of error
             return new ArrayList<>();
         }
         
@@ -142,7 +134,6 @@ public class User {
             return;
         }
         
-        // Find if ingredient already exists in list
         for (ShoppingListItem item : list) {
             if (item.getIngredient().getId() == ingredient.getId()) {
                 item.setQuantity(item.getQuantity() + quantity);
@@ -150,11 +141,9 @@ public class User {
             }
         }
         
-        // If not found, add new
         list.add(new ShoppingListItem(ingredient, quantity));
     }
     
-    // Inner class for shopping list items
     public static class ShoppingListItem {
         private Ingredient ingredient;
         private double quantity;
